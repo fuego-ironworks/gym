@@ -25,3 +25,13 @@ The goal is not to spend time manually comparing models. The repository turns re
 - `docs/` — design notes and evidence rules.
 
 The first target is a thin harness that can compare local models without requiring repeated manual prompting or subjective model tinkering.
+
+## Durable schemas
+
+The first executable survivability slice lives in `schemas/`, with a standard-library-only validator in `tools/validate_record.py`. It defines provider-neutral model manifests, run records, and durable receipts while leaving private trace payloads and large model objects outside this public repository.
+
+Run its local checks with:
+
+```sh
+python3 -m unittest discover -s tests
+```
