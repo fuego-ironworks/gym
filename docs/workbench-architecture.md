@@ -188,7 +188,9 @@ Retain:
 - cases that caused the change;
 - rollback information.
 
-Initially, policy/code changes remain pull-request changes. Automated routing changes should be limited to rules that are deterministic, auditable, and reversible.
+Initially, evaluator policy and code changes remain pull-request changes. Routing/configuration may eventually update automatically only when the rule is narrow, deterministic, auditable, reversible, has enough relevant evidence, and shows no defined critical regression. Ambiguous cases should produce a proposed change or no change rather than forcing adaptation.
+
+The weekly process is deliberately periodic rather than continuous. It should spend idle compute freely when useful, but it should not constantly churn model choice based on a handful of fresh interactions.
 
 ## Storage sketch
 
