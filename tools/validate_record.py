@@ -39,12 +39,30 @@ TYPE_CHECKS = {
 }
 
 
-def validate(schema: dict[str, Any], value: Any, path: str = "$") -> list[str]:
+def schema_errors(schema: dict[str, Any], path: str = "$schema") -> list[str]:
     errors: list[str] = []
     unsupported = sorted(set(schema) - SUPPORTED_SCHEMA_KEYS)
     if unsupported:
         errors.append(f"{path}: unsupported schema keyword(s): {', '.join(unsupported)}")
+
+    properties = schema.get("properties")
+    if isinstance(properties, dict):
+        for name, child_schema in properties.items():
+            if isinstance(child_schema, dict):
+                errors.extend(schema_errors(child_schema, f"{path}.properties.{name}"))
+
+    item_schema = schema.get("items")
+    if isinstance(item_schema, dict):
+        errors.extend(schema_errors(item_schema, f"{path}.items"))
+
+    return errors
+
+
+def validate(schema: dict[str, Any], value: Any, path: str = "$") -> list[str]:
+    errors = schema_errors(schema)
+    if errors:
         return errors
+
     expected_type = schema.get("type")
 
     if expected_type is not None:
