@@ -2,6 +2,8 @@
 
 The intended workflow is automated qualification rather than manual model hobbyism.
 
+The acceptance system is one part of a broader automated multi-model workbench. See `docs/workbench-architecture.md` for parallel model execution, synthesis, passive feedback, provenance, and conservative weekly adaptation.
+
 ## Inputs
 
 There are two distinct input streams.
@@ -21,6 +23,8 @@ Cases should come from work that matters in practice, for example:
 - completing multi-part requests without unnecessary prompting.
 
 Each case should retain enough information to reproduce the evaluation: prompt/instructions, relevant context, expected properties, deterministic checks where available, and known-good or known-bad examples when useful.
+
+Ordinary interaction should also produce candidate cases when concrete evidence exists: failed tests, reverted patches, explicit corrections, repairs by another model, repeated missed requirements, or manual continuations. Weak sentiment signals may locate incidents but are not evaluation results by themselves.
 
 ### External claims
 
@@ -105,6 +109,8 @@ cheap_extraction   -> small_model_d
 fallback           -> model_a
 ```
 
+A route may also specify a multi-model procedure rather than one model, such as independent candidates followed by tests, focused disagreement resolution, and final verification.
+
 The routing table must be traceable to retained qualification results.
 
 ## Harness boundary
@@ -120,7 +126,10 @@ adapters/
 scorers/
 policies/
 receipts/
+runs/
+routing/
+ui/
 docs/
 ```
 
-The first implementation should stay small: one local inference adapter, a handful of representative real-work cases, deterministic scoring where possible, continuation accounting, and a receipt format. Broader benchmark integration can follow after that boundary works end to end.
+The first implementation should stay small: one local inference adapter, a handful of representative real-work cases, deterministic scoring where possible, continuation accounting, provenance, and a receipt format. A second adapter can then establish the first true parallel comparison path. Broader benchmark integration can follow after that boundary works end to end.
