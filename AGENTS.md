@@ -95,6 +95,21 @@ Keep weekly adaptation conservative:
 
 Changes to evaluator code, schemas, or acceptance policy remain ordinary repository changes and should be reviewed through normal branch and pull-request history. Automated routing/configuration updates may be considered separately only where their promotion rule is narrow, deterministic, auditable, and reversible.
 
+## Hosted-service survivability
+
+Treat GitHub, hosted CI, model hosts, and proprietary inference APIs as replaceable providers, not as the only copy of acceptance-critical state.
+
+- Keep complete local Git mirrors for repositories whose history participates in qualification or provenance.
+- Remember that Git data alone does not preserve GitHub issues, pull-request discussion, workflow logs, artifacts, releases, or other hosted metadata. Export the hosted state that matters to reproducibility or evidence.
+- Keep model manifests with exact revisions, hashes, provenance, runtime requirements, and license metadata. Large weights belong in a content-addressed local store rather than this public repository.
+- Keep provider-neutral schemas for work items, model outputs, tool traces, checks, corrections, scorer results, routing decisions, and receipts so replacing one provider does not erase historical evidence.
+- Do not publish private conversation history, credentials, or restricted model objects merely to make recovery easier. Define formats publicly and retain sensitive evidence in an appropriate local/private store.
+- Every acceptance-critical hosted CI path should have a durable local execution path that can emit its own receipts.
+- Periodically exercise a narrow recovery case with GitHub, hosted runners, model hosts, and proprietary APIs unavailable. Documentation is not evidence that recovery works.
+- Failure to mirror, export, or verify retained objects must remain visible as failure or UNKNOWN. Never strengthen an acceptance claim because the original evidence disappeared.
+
+See `docs/survivability.md` for the failure model and recovery acceptance boundary.
+
 ## Changes
 
 Keep the harness thin. Reuse external evaluation frameworks where useful, but keep this repository's acceptance policy and evidence format authoritative.
