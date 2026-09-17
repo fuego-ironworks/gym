@@ -111,8 +111,24 @@ class SchemaValidationTests(unittest.TestCase):
         self.assertTrue(any("unexpected property" in error for error in errors))
 
     def test_unsupported_schema_keyword_fails_closed(self) -> None:
-        errors = validate({"type": "string", "maxLength": 3}, "ok")
-        self.assertTrue(any("unsupported schema keyword" in error for error in errors))
+        cases = [
+            ({"type": "string", "maxLength": 3}, "ok"),
+            (
+                {
+                    "type": "object",
+                    "properties": {
+                        "optional": {"type": "string", "maxLength": 3},
+                    },
+                },
+                {},
+            ),
+        ]
+        for schema, record in cases:
+            with self.subTest(schema=schema):
+                errors = validate(schema, record)
+                self.assertTrue(
+                    any("unsupported schema keyword" in error for error in errors)
+                )
 
     def test_unknown_status_is_preserved_as_a_valid_status(self) -> None:
         record = copy.deepcopy(RECEIPT)
