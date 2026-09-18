@@ -45,3 +45,12 @@ restricted objects.
 
 See `docs/object-store.md` for the storage layout, commands, and exact evidence
 boundary.
+
+## Local Git mirrors
+
+`tools/mirror_git.py` creates and updates complete bare Git mirrors from a
+provider-neutral manifest, verifies mirror refspec and object integrity, and can
+re-check retained mirrors without contacting the original host.
+
+See `docs/git-mirroring.md` for manifest format, local scheduling, receipts,
+and the boundary between Git history and hosted metadata.
