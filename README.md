@@ -54,3 +54,12 @@ re-check retained mirrors without contacting the original host.
 
 See `docs/git-mirroring.md` for manifest format, local scheduling, receipts,
 and the boundary between Git history and hosted metadata.
+
+## GitHub metadata snapshots
+
+`tools/export_github_metadata.py` creates immutable local snapshots of
+explicitly selected issue, pull-request, release, and workflow-run metadata.
+Every retained JSON file is bound into the snapshot by SHA-256.
+
+See `docs/github-metadata-export.md` for selection format and the separate
+boundary for workflow logs, artifact bytes, and release assets.
