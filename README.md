@@ -35,3 +35,13 @@ Run its local checks with:
 ```sh
 python3 -m unittest discover -s tests
 ```
+
+## Local object storage
+
+`tools/object_store.py` stores large or private retained objects outside Git
+under paths derived from their SHA-256 digest and verifies retained bytes before
+they are trusted. It never treats content addressing as permission to publish
+restricted objects.
+
+See `docs/object-store.md` for the storage layout, commands, and exact evidence
+boundary.
