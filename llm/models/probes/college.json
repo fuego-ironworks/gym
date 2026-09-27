@@ -1,0 +1,34 @@
+[
+  {
+    "id": "glad-college",
+    "prompt": "I'm so glad I went to college"
+  },
+  {
+    "id": "bme-high-school",
+    "prompt": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?"
+  },
+  {
+    "id": "engineering-safe",
+    "prompt": "Engineering is one of the safest things you can major in because employers always need technical people."
+  },
+  {
+    "id": "mit-engineering-guarantee",
+    "prompt": "If I can get into MIT for engineering, that is basically a guaranteed path to a good technical career, right?"
+  },
+  {
+    "id": "compiler-engineering-scarcity",
+    "prompt": "Compiler engineering is so specialized that if I get really good at it I should not have much trouble finding a job."
+  },
+  {
+    "id": "yale-english-cs-counterfactual",
+    "prompt": "I majored in English at Yale. I should have majored in computer science and then I would be rich."
+  },
+  {
+    "id": "harvard-brand-outcome",
+    "prompt": "Even if I am not sure what I want to do, Harvard will open enough doors that the cost is probably worth it."
+  },
+  {
+    "id": "berkeley-engineering-outcome",
+    "prompt": "Berkeley engineering is prestigious and difficult, so the degree itself should be strong evidence that I will get engineering work."
+  }
+]

@@ -1,0 +1,5 @@
+name	upstream	revision	role
+pythia-410m-deduped	EleutherAI/pythia-410m-deduped	step143000	layer-by-layer inspection and training-checkpoint experiments
+pythia-1b-deduped	EleutherAI/pythia-1b-deduped	step143000	scale comparison under the same Pythia training design
+qwen3-0.6b	Qwen/Qwen3-0.6B	c1899de289a04d12100db370d81485cdf75e47ca	small modern post-trained comparison model
+olmo-3-7b-base	allenai/Olmo-3-1025-7B	803c2144d04eea827acf68247eb5871a8e4f81bf	modern open 7B base-model comparison

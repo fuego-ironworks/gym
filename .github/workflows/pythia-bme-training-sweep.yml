@@ -1,0 +1,58 @@
+name: Sweep Pythia BME prior across training
+
+on:
+  push:
+    branches:
+      - pythia
+    paths:
+      - .github/workflows/pythia-bme-training-sweep.yml
+      - llm/models/run_pythia_bme_training_sweep.py
+      - llm/models/probes/bme-training.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pythia
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU inference stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check \
+            transformers==4.44.2
+
+      - name: Sweep biomedical-engineering prompt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python llm/models/run_pythia_bme_training_sweep.py
+
+      - name: Commit receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "gym pythia probe"
+          git config user.email "gym-pythia-probe@users.noreply.github.com"
+          git add llm/models/runs/pythia-410m-bme-training-sweep.md
+          if git diff --cached --quiet; then
+            echo "BME sweep receipt unchanged"
+            exit 0
+          fi
+          git commit -m "[pythia] Record BME training sweep"
+          git pull --rebase origin pythia
+          git push origin HEAD:pythia
