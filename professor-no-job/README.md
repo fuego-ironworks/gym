@@ -53,6 +53,36 @@ Use these categories:
 
 That distinction matters for cases such as K-12 teachers and private research institutes.
 
+## Domain-practice test
+
+For faculty and administrators attached to explicitly occupational programs, ask a third question:
+
+> Has this person actually worked in the occupation or industry the program is preparing students to enter?
+
+Examples include:
+
+- quantitative finance / banking / trading / risk;
+- human resources;
+- emergency services;
+- nursing and allied health;
+- engineering specialties;
+- skilled trades;
+- teaching;
+- management and business programs.
+
+Record separately:
+
+- the occupational domain being taught or administered;
+- documented employment in that domain outside education;
+- consulting/advisory work;
+- research about the domain;
+- licenses/certifications where relevant;
+- duration and recency of practice.
+
+Do not silently equate scholarship about an industry with employment in that industry, and do not silently equate absence of industry employment with inability to teach. The purpose is to expose the distinction and later compare it with curriculum, student outcomes, cost, and the claims programs make to prospective students.
+
+The person-level version of this test lives in `cases.csv`; detailed employment rows live in `people.csv`.
+
 ## Evidence standard
 
 For each claim record:
@@ -82,6 +112,8 @@ Once enough cases exist, compute:
 
 - fraction with any documented nonacademic paid work;
 - fraction with work outside education/research institutions altogether;
+- fraction of occupational-program leaders with documented practice in the occupation;
+- years of domain practice before teaching/administering the program;
 - years of nonacademic work before first faculty appointment;
 - fraction moving directly from school/postdoc into academia;
 - differences by field;
