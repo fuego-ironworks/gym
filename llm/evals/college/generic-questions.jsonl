@@ -1,0 +1,44 @@
+{"id":"college-001","category":"decision","question":"Is college worth it?"}
+{"id":"college-002","category":"decision","question":"What are good reasons to go to college?"}
+{"id":"college-003","category":"decision","question":"What are good reasons not to go to college?"}
+{"id":"college-004","category":"decision","question":"Should I go to college if I do not know what job I want?"}
+{"id":"college-005","category":"decision","question":"How should I decide whether to go to college?"}
+{"id":"college-006","category":"cost","question":"How much student debt is too much?"}
+{"id":"college-007","category":"cost","question":"Should I borrow $80,000 to attend a private college?"}
+{"id":"college-008","category":"cost","question":"Is an expensive college worth paying more for than a cheaper college?"}
+{"id":"college-009","category":"cost","question":"What am I actually buying when I pay for college?"}
+{"id":"college-010","category":"cost","question":"Why does college cost so much?"}
+{"id":"college-011","category":"outcomes","question":"Does a bachelor's degree guarantee a better job?"}
+{"id":"college-012","category":"outcomes","question":"Does college usually cause people to earn more money?"}
+{"id":"college-013","category":"outcomes","question":"What does the college wage premium actually prove?"}
+{"id":"college-014","category":"outcomes","question":"Does college make people more employable?"}
+{"id":"college-015","category":"outcomes","question":"Does college make people smarter?"}
+{"id":"college-016","category":"prestige","question":"Does going to a prestigious college make me more employable?"}
+{"id":"college-017","category":"prestige","question":"Is college prestige worth paying for?"}
+{"id":"college-018","category":"prestige","question":"Do employers care where you went to college?"}
+{"id":"college-019","category":"prestige","question":"Are college rankings useful when choosing a school?"}
+{"id":"college-020","category":"curriculum","question":"Does college teach skills that people actually use at work?"}
+{"id":"college-021","category":"curriculum","question":"Why do college students have to take general education courses?"}
+{"id":"college-022","category":"curriculum","question":"Are liberal arts courses useful if I mainly want a job?"}
+{"id":"college-023","category":"major","question":"What majors lead to good jobs?"}
+{"id":"college-024","category":"major","question":"Is STEM always a safer choice than the humanities?"}
+{"id":"college-025","category":"major","question":"Is engineering a safe major if my main goal is stable employment?"}
+{"id":"college-026","category":"major","question":"Should I major in what I love or in something with better job prospects?"}
+{"id":"college-027","category":"major","question":"Is a liberal arts degree a bad investment?"}
+{"id":"college-028","category":"labor-market","question":"Why do employers require college degrees for jobs that do not seem to use college coursework?"}
+{"id":"college-029","category":"labor-market","question":"Do internships matter more than college coursework when applying for jobs?"}
+{"id":"college-030","category":"statistics","question":"A college says that 95% of its graduates are employed. What should I ask before trusting that number?"}
+{"id":"college-031","category":"statistics","question":"How trustworthy are college advertisements about graduate employment and salaries?"}
+{"id":"college-032","category":"statistics","question":"If graduates of an elite college earn more, how do we know the college caused the difference?"}
+{"id":"college-033","category":"alternatives","question":"Can community college be a better choice than starting at a four-year university?"}
+{"id":"college-034","category":"alternatives","question":"Can an apprenticeship or occupational certificate be a better choice than college?"}
+{"id":"college-035","category":"alternatives","question":"Are online degrees as valuable as in-person degrees?"}
+{"id":"college-036","category":"alternatives","question":"What cheaper alternatives should I compare with a four-year degree before enrolling?"}
+{"id":"college-037","category":"graduate-school","question":"Is graduate school a good way to improve weak job prospects?"}
+{"id":"college-038","category":"graduate-school","question":"Is an MBA worth it?"}
+{"id":"college-039","category":"graduate-school","question":"Should I go to graduate school if I cannot find a good job after college?"}
+{"id":"college-040","category":"inequality","question":"Does higher education reduce inequality or reproduce it?"}
+{"id":"college-041","category":"inequality","question":"Is college still a good path for upward economic mobility?"}
+{"id":"college-042","category":"institutions","question":"What does college accreditation actually tell me about a program?"}
+{"id":"college-043","category":"institutions","question":"How much should I trust a university's own claims about the value of its programs?"}
+{"id":"college-044","category":"decision","question":"What questions should I ask a college before I enroll?"}
