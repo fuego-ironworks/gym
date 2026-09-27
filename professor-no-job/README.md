@@ -35,6 +35,8 @@ Use these categories:
 - `academic_staff`
 - `academic_administration`
 - `student_or_trainee`
+- `k12_education`
+- `research_institute_nonacademic`
 - `government_nonacademic`
 - `private_sector`
 - `nonprofit_nonacademic`
@@ -44,7 +46,12 @@ Use these categories:
 - `other_nonacademic`
 - `unknown`
 
-"Real job" is too ambiguous for the data file. The operational question is **documented nonacademic paid employment**.
+"Real job" is too ambiguous for the data file. Preserve at least two questions separately:
+
+1. Did the person have documented paid employment **outside postsecondary academia**?
+2. Did the person have documented paid employment **outside education/research institutions altogether**?
+
+That distinction matters for cases such as K-12 teachers and private research institutes.
 
 ## Evidence standard
 
@@ -67,11 +74,14 @@ Never infer that a person has never held a nonacademic job merely because a shor
 
 Likewise, do not assert that someone has "never done a job interview." That generally is not recoverable from a CV unless the person has explicitly discussed it.
 
+A published CV that lists only academic employment supports the narrower statement **"no nonacademic employment is listed on this CV."** It does not prove that no such employment ever occurred.
+
 ## Derived questions
 
 Once enough cases exist, compute:
 
 - fraction with any documented nonacademic paid work;
+- fraction with work outside education/research institutions altogether;
 - years of nonacademic work before first faculty appointment;
 - fraction moving directly from school/postdoc into academia;
 - differences by field;
