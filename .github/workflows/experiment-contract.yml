@@ -1,0 +1,39 @@
+name: Experiment contract (no paid compute)
+
+on:
+  push:
+    branches: [experiment-preflight-core]
+    paths:
+      - tools/experiment_contract.py
+      - tests/test_experiment_contract.py
+      - .github/workflows/experiment-contract.yml
+  pull_request:
+    paths:
+      - tools/experiment_contract.py
+      - tests/test_experiment_contract.py
+      - .github/workflows/experiment-contract.yml
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run offline contract acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -p test_experiment_contract.py -v 2>&1 | tee experiment-contract-tests.txt
+      - name: Retain exact-run test log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: experiment-contract-${{ github.run_id }}-${{ github.run_attempt }}
+          path: experiment-contract-tests.txt
+          if-no-files-found: error
+          retention-days: 30
