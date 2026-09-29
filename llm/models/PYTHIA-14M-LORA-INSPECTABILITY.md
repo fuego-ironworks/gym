@@ -196,3 +196,40 @@ Exact receipt:
 `llm/models/runs/pythia-14m-deduped-bme-onset.md`.
 
 GitHub Actions run: 36583196045. No paid compute was used.
+
+## Initial implementation
+
+The first reusable harness lives in `llm/models/lora_differential.py`. It wraps
+one `nn.Linear` with a minimal inspectable LoRA adapter rather than hiding the
+mechanics behind PEFT. The wrapper exposes `A`, `B`, reconstructed adapter
+weight, merge/unmerge, enable/disable, and the exact adapter input.
+
+`llm/models/run_pythia_14m_lora_inspectability.py` applies that harness to
+`EleutherAI/pythia-14m-deduped` at `step143000`. The default target is
+`gpt_neox.layers.0.attention.query_key_value`.
+
+Implemented now:
+
+- Test 0: zero-`B` no-op, disable/restore, save/reload, zero merge/unmerge,
+  layer-activation equality, and frozen-base hashes;
+- Test 1: one example, rank 1, one matrix, plain SGD, one optimizer step, with
+  `A`, `B`, gradients, parameter deltas, reconstructed weight change, adapter
+  input, `a^T x`, injected direction, every captured layer-activation delta,
+  every logit delta, loss delta, and frozen-base hashes;
+- Test 2: `--steps N` retains one JSON receipt and one complete tensor bundle
+  for every adjacent optimizer step. Each step records adapter weight before,
+  after, and the step-local difference.
+
+`tests/test_rank_one_lora.py` checks the mechanics without a model download,
+including the expected first-step asymmetry: zero `B` gives zero gradient for
+`A` while `B` can move; a second step can then move `A`.
+
+`.github/workflows/pythia-14m-lora-inspectability.yml` runs the synthetic
+mechanics first and then the actual 14M deduped model on a CPU GitHub runner.
+The workflow uploads the `.pt` tensor bundles and JSON receipts rather than
+committing generated evidence to the source branch.
+
+Tests 3 and 4 still need comparison drivers. The current runner already makes
+`target` and `example` explicit run coordinates so those comparisons can reuse
+the same receipt format instead of growing separate one-off scripts.
+
