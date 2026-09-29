@@ -15,9 +15,14 @@ microbatch="${PYTHIA_MICROBATCH:-8}"
 stride="${PYTHIA_CHECKPOINT_STRIDE:-8}"
 
 base_config="$repo_root/llm/models/upstream/pythia/pythia-410m-deduped.yml"
-overlay="$run_dir/vast-0-512-overlay.json"
+derived_config="$run_dir/pythia-410m-deduped-vast.yml"
 
-for required in     "$neox_dir/deepy.py"     "$data_prefix.bin"     "$data_prefix.idx"     "$tokenizer"     "$base_config"
+for required in \
+    "$neox_dir/deepy.py" \
+    "$data_prefix.bin" \
+    "$data_prefix.idx" \
+    "$tokenizer" \
+    "$base_config"
 do
     if [[ ! -e "$required" ]]; then
         echo "missing required input: $required" >&2
@@ -27,33 +32,44 @@ done
 
 mkdir -p "$run_dir" "$save_dir"
 
-python3 "$here/make_dense_overlay.py"     --data-prefix "$data_prefix"     --tokenizer "$tokenizer"     --save-dir "$save_dir"     --microbatch "$microbatch"     --checkpoint-stride "$stride"     --output "$overlay"
+python3 "$here/make_dense_config.py" \
+    --base-config "$base_config" \
+    --data-prefix "$data_prefix" \
+    --tokenizer "$tokenizer" \
+    --save-dir "$save_dir" \
+    --microbatch "$microbatch" \
+    --checkpoint-stride "$stride" \
+    --output "$derived_config"
 
 {
     echo "started_utc $(date -u +%Y-%m-%dT%H:%M:%SZ)"
     echo "gym_commit $(git -C "$repo_root" rev-parse HEAD)"
     echo "neox_commit $(git -C "$neox_dir" rev-parse HEAD)"
+    echo "neox_diff_sha256 $(git -C "$neox_dir" diff | sha256sum | awk '{print $1}')"
     echo "base_config_sha256 $(sha256sum "$base_config" | awk '{print $1}')"
-    echo "overlay_sha256 $(sha256sum "$overlay" | awk '{print $1}')"
+    echo "derived_config_sha256 $(sha256sum "$derived_config" | awk '{print $1}')"
     echo "dataset_bin_sha256 $(sha256sum "$data_prefix.bin" | awk '{print $1}')"
     echo "dataset_idx_sha256 $(sha256sum "$data_prefix.idx" | awk '{print $1}')"
     echo "tokenizer_sha256 $(sha256sum "$tokenizer" | awk '{print $1}')"
     echo "microbatch $microbatch"
+    echo "gradient_accumulation $((1024 / microbatch))"
     echo "checkpoint_stride $stride"
     nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 } | tee "$run_dir/manifest.txt"
 
 echo
 echo "Nominal train-iters remains 143000."
-echo "The overlay uses exit-interval=512, which NeoX v1.0 checks after saving."
+echo "Derived config exits at step 512 after checkpointing."
 echo
 
 cd "$neox_dir"
+python3 deepy.py train.py "$derived_config" \
+    2>&1 | tee "$run_dir/train.log"
 
-# deepy forwards launcher arguments to DeepSpeed. One GPU is intentional; the
-# overlay raises gradient accumulation so one optimizer step still contains the
-# original 1024 sequences.
-python3 deepy.py     train.py     "$base_config"     "$overlay"     --num_gpus 1     2>&1 | tee "$run_dir/train.log"
+if [[ ! -d "$save_dir/global_step512" ]]; then
+    echo "training exited without a global_step512 checkpoint" >&2
+    exit 1
+fi
 
-echo "training process exited"
-echo "verify that a step-512 checkpoint exists before retiring the instance"
+echo "step-512 checkpoint present: $save_dir/global_step512"
+echo "copy/verify retained artifacts before destroying the rental"
