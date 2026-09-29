@@ -141,10 +141,14 @@ def summarize_pairs(rows):
     return margins, sum(margins.values()) / len(margins)
 
 
+def lens_location(index):
+    return "input" if index == 0 else f"block{index - 1}_post"
+
+
 def first_positive(rows):
     for row in rows:
         if row["aggregate_margin"] > 0:
-            return row["layer"]
+            return row["location"]
     return None
 
 
@@ -152,9 +156,9 @@ def first_sustained_sign(rows, positive):
     for index, row in enumerate(rows):
         tail = rows[index:]
         if positive and all(item["aggregate_margin"] > 0 for item in tail):
-            return row["layer"]
+            return row["location"]
         if not positive and all(item["aggregate_margin"] < 0 for item in tail):
-            return row["layer"]
+            return row["location"]
     return None
 
 
@@ -266,7 +270,8 @@ def score_prompt(model, lens, tokenizer, prompt_name, prompt):
             kls.append(mean_forward_kl(model_logits, lens_logits))
             row = {
                 "prompt": prompt_name,
-                "layer": layer,
+                "lens_index": layer,
+                "location": lens_location(layer),
                 "pair": entry["pair"],
                 "kind": entry["kind"],
                 "mean_logp": value,
@@ -278,7 +283,8 @@ def score_prompt(model, lens, tokenizer, prompt_name, prompt):
         trajectory.append(
             {
                 "prompt": prompt_name,
-                "layer": layer,
+                "lens_index": layer,
+                "location": lens_location(layer),
                 "aggregate_margin": aggregate,
                 "pair1_margin": margins[1],
                 "pair2_margin": margins[2],
@@ -295,7 +301,8 @@ def score_prompt(model, lens, tokenizer, prompt_name, prompt):
         value = mean_target_logp(logits, entry["targets"])
         row = {
             "prompt": prompt_name,
-            "layer": "model",
+            "lens_index": "model",
+            "location": "model_output",
             "pair": entry["pair"],
             "kind": entry["kind"],
             "mean_logp": value,
@@ -307,7 +314,8 @@ def score_prompt(model, lens, tokenizer, prompt_name, prompt):
     trajectory.append(
         {
             "prompt": prompt_name,
-            "layer": "model",
+            "lens_index": "model",
+            "location": "model_output",
             "aggregate_margin": aggregate,
             "pair1_margin": margins[1],
             "pair2_margin": margins[2],
@@ -401,16 +409,16 @@ def run(args):
     tsv(
         output_dir / "pair_scores.tsv",
         [
-            "mode", "checkpoint", "prompt", "layer", "pair", "kind",
-            "mean_logp", "boundary_agrees"
+            "mode", "checkpoint", "prompt", "lens_index", "location",
+            "pair", "kind", "mean_logp", "boundary_agrees"
         ],
         all_pairs,
     )
     tsv(
         output_dir / "trajectory.tsv",
         [
-            "mode", "checkpoint", "prompt", "layer", "aggregate_margin",
-            "pair1_margin", "pair2_margin", "pair3_margin",
+            "mode", "checkpoint", "prompt", "lens_index", "location",
+            "aggregate_margin", "pair1_margin", "pair2_margin", "pair3_margin",
             "mean_kl_to_checkpoint_output"
         ],
         all_trajectory,
@@ -487,23 +495,23 @@ def run(args):
             "",
             f"- model-output margin: {model_row['aggregate_margin']:+.6f}",
             (
-                "- first positive lens layer: "
+                "- first positive lens location: "
                 f"{first_pos if first_pos is not None else 'none'}"
             ),
             (
-                "- first lens layer after which the lens sign stays equal to "
+                "- first residual location after which the lens sign stays equal to "
                 "the model-output sign: "
                 f"{sustained if sustained is not None else 'none'}"
             ),
             "",
-            "| layer | aggregate | pair 1 | pair 2 | pair 3 | mean KL |",
-            "| ---: | ---: | ---: | ---: | ---: | ---: |",
+            "| lens index | residual location | aggregate | pair 1 | pair 2 | pair 3 | mean KL |",
+            "| ---: | --- | ---: | ---: | ---: | ---: | ---: |",
         ]
         for row in rows:
             lines.append(
-                "| {layer} | {aggregate_margin:+.6f} | {pair1_margin:+.6f} | "
-                "{pair2_margin:+.6f} | {pair3_margin:+.6f} | "
-                "{mean_kl_to_checkpoint_output:.6f} |".format(**row)
+                "| {lens_index} | {location} | {aggregate_margin:+.6f} | "
+                "{pair1_margin:+.6f} | {pair2_margin:+.6f} | "
+                "{pair3_margin:+.6f} | {mean_kl_to_checkpoint_output:.6f} |".format(**row)
             )
         lines.append("")
 
