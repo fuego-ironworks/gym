@@ -1,0 +1,85 @@
+name: Pythia 14M LoRA inspectability
+
+on:
+  push:
+    branches:
+      - pythia-14m-lora-inspectability
+    paths:
+      - .github/workflows/pythia-14m-lora-inspectability.yml
+      - llm/models/lora_differential.py
+      - llm/models/run_pythia_14m_lora_inspectability.py
+      - tests/test_rank_one_lora.py
+  pull_request:
+    paths:
+      - .github/workflows/pythia-14m-lora-inspectability.yml
+      - llm/models/lora_differential.py
+      - llm/models/run_pythia_14m_lora_inspectability.py
+      - tests/test_rank_one_lora.py
+  workflow_dispatch:
+    inputs:
+      steps:
+        description: Adjacent optimizer steps to retain after Test 0
+        required: true
+        default: "2"
+
+permissions:
+  contents: read
+
+jobs:
+  tensor-mechanics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Gym
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU PyTorch
+        run: |
+          python -m pip install --disable-pip-version-check \
+            torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Test rank-one mechanics without a model download
+        run: python -m unittest tests/test_rank_one_lora.py
+
+  pythia-14m:
+    needs: tensor-mechanics
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Check out Gym
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check \
+            torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check \
+            transformers==4.44.2 huggingface_hub==0.24.7
+
+      - name: Run Test 0 and stepwise LoRA differential
+        shell: bash
+        run: |
+          set -euo pipefail
+          steps="${{ inputs.steps }}"
+          if [ -z "$steps" ]; then steps=1; fi
+          python llm/models/run_pythia_14m_lora_inspectability.py \
+            --steps "$steps" \
+            --output-dir llm/models/runs/pythia-14m-lora-inspectability
+
+      - name: Upload complete tensor receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pythia-14m-lora-inspectability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: llm/models/runs/pythia-14m-lora-inspectability/
+          if-no-files-found: error
