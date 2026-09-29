@@ -137,6 +137,19 @@ def frozen_parameter_hashes(model: nn.Module) -> dict[str, str]:
     }
 
 
+def named_hashes_digest(hashes: dict[str, str]) -> dict[str, Any]:
+    digest = hashlib.sha256()
+    for name, value in sorted(hashes.items()):
+        digest.update(name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(value.encode("ascii"))
+        digest.update(b"\n")
+    return {
+        "tensor_count": len(hashes),
+        "sha256": digest.hexdigest(),
+    }
+
+
 def first_tensor(value: Any) -> torch.Tensor:
     if isinstance(value, torch.Tensor):
         return value
@@ -262,6 +275,10 @@ def run_test0(
             "frozen_parameters_unchanged": frozen_before == frozen_after,
         },
         "loss": float(attached.loss.detach().cpu().item()),
+        "frozen_base": {
+            "before": named_hashes_digest(frozen_before),
+            "after": named_hashes_digest(frozen_after),
+        },
         "logits": tensor_summary(attached.logits),
         "adapter": {
             "a": tensor_summary(adapter.a),
@@ -344,6 +361,10 @@ def run_optimizer_step(
         "test": 1 if step == 1 else 2,
         "optimizer_step": step,
         "checks": checks,
+        "frozen_base": {
+            "before": named_hashes_digest(frozen_before),
+            "after": named_hashes_digest(frozen_after),
+        },
         "loss_before": float(before.loss.detach().cpu().item()),
         "loss_after": float(after.loss.detach().cpu().item()),
         "loss_delta": float((after.loss.detach() - before.loss.detach()).cpu().item()),
