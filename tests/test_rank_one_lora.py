@@ -1,11 +1,19 @@
 import unittest
 
-import torch
-from torch import nn
+try:
+    import torch
+    from torch import nn
+except ModuleNotFoundError:
+    torch = None
+    nn = None
 
-from llm.models.lora_differential import RankOneLoRA
+if torch is not None:
+    from llm.models.lora_differential import RankOneLoRA
+else:
+    RankOneLoRA = None
 
 
+@unittest.skipIf(torch is None, "PyTorch is exercised by the dedicated LoRA workflow")
 class RankOneLoRATest(unittest.TestCase):
     def make_adapter(self):
         torch.manual_seed(11)
