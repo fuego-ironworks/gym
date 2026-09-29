@@ -17,8 +17,8 @@ import torch
 from huggingface_hub import HfApi
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-MODEL = "EleutherAI/pythia-410m-deduped"
-OUTPUT = Path(__file__).with_name("runs") / "pythia-410m-bme-onset.md"
+MODEL = os.environ.get("PYTHIA_BME_MODEL", "EleutherAI/pythia-410m-deduped")
+OUTPUT = Path(os.environ.get("PYTHIA_BME_OUTPUT", str(Path(__file__).with_name("runs") / "pythia-410m-bme-onset.md")))
 
 PROMPT = (
     "I'm a junior in high school and will be taking AB calculus next year. "
@@ -188,7 +188,7 @@ def main():
             break
 
     lines = [
-        "# Pythia 410M biomedical-engineering onset sweep",
+        "# Pythia biomedical-engineering onset sweep",
         "",
         f"- model: `{MODEL}`",
         "- experiment: raw base-model checkpoint sweep; no RAG, adapter, system message, chat template, or few-shot examples",
