@@ -1,17 +1,15 @@
 # Pythia 410M deduped: Vast.ai early-checkpoint reproduction
 
-This directory is a first operational draft for reproducing the early
-`EleutherAI/pythia-410m-deduped` trajectory on a disposable Vast.ai GPU.
+This directory drafts a disposable Vast.ai run for reproducing the early
+`EleutherAI/pythia-410m-deduped` trajectory.
 
-Scope is deliberately bounded to optimizer steps 0 through 512. Nothing here
-should train past step 512.
+Scope stops at optimizer step 512.
 
 ## Reproduction rule
 
 Do **not** shorten the upstream training configuration to 512 iterations.
 
-GPT-NeoX uses the nominal training length in the learning-rate schedule and in
-training-data setup. The run therefore keeps the original:
+The derived config keeps the original:
 
 - `train-iters = 143000`
 - `lr-decay-iters = 143000`
@@ -19,102 +17,105 @@ training-data setup. The run therefore keeps the original:
 - sequence length 2048
 - 1024 sequences / 2,097,152 tokens per optimizer step
 
-The overlay sets `exit-interval = 512`. GPT-NeoX v1.0 checks that condition
-after checkpointing, so the process exits immediately after the step-512
-checkpoint is written.
+It adds `exit-interval = 512`. GPT-NeoX v1.0 checks that condition after its
+checkpointing block, so the process exits immediately after step 512 is saved.
 
-On one GPU, gradient accumulation is chosen so that:
+On one GPU:
 
     microbatch * gradient_accumulation = 1024 sequences
 
-Changing the GPU count and reduction order means a one-GPU run must not be
-called bit-identical to EleutherAI's original 32-GPU run until comparison at the
-published checkpoints shows what the divergence actually is.
+The original run used 32 GPUs. A one-GPU rerun changes floating-point reduction
+order, so call its products a dense Pythia reproduction until comparison
+against EleutherAI's released anchor checkpoints measures the divergence.
 
 ## Files
 
-- `vast_search.sh` prints suitable one-GPU offers. It never rents anything.
-- `vast_create.sh OFFER_ID` creates the selected instance.
-- `bootstrap_remote.sh` installs the legacy GPT-NeoX v1.0 environment.
-- `prepare_data.sh` reconstructs the deduplicated Pile mmap without keeping a
-  second full copy of all 83 source shards.
-- `make_dense_overlay.py` produces the small NeoX overlay while enforcing the
-  original global-batch invariant.
-- `run_0_512.sh` records machine/config provenance and launches the bounded run.
+- `vast_search.sh` lists candidate one-GPU rentals; it never rents one.
+- `vast_create.sh OFFER_ID` is dry-run by default and creates only when
+  `VAST_CREATE=1`.
+- `bootstrap_remote.sh` reconstructs the legacy GPT-NeoX v1.0 environment.
+- `prepare_data.sh` reconstructs the deduplicated-Pile mmap one shard at a
+  time so source shards and the complete merged file need not coexist.
+- `make_dense_config.py` derives one complete NeoX config from the vendored
+  upstream 410M config and checks the original batch/schedule invariants.
+- `neox-v1-slim-checkpoints.patch` makes NeoX v1.0's existing
+  `no-save-optim` setting useful for this run by removing only the
+  just-written DeepSpeed optimizer-state shard.
+- `run_0_512.sh` records provenance and launches the bounded run.
 
-The checked-in upstream model configuration remains authoritative:
-`llm/models/upstream/pythia/pythia-410m-deduped.yml`.
+GPT-NeoX v1.0 rejects duplicate keys spread across multiple config files.
+Consequently this workflow generates one complete derived config rather than
+trying to override the upstream config with a second overlay.
 
 ## Checkpoint density
 
-Default checkpoint stride is 8. The original logarithmic checkpoints are added
-explicitly, so the run retains steps 0, 1, 2, 4, 8, 16, 32, 64, 128, 256 and
-512 as anchors.
+Default stride is 8, plus the original anchor steps:
 
-Set:
+    0 1 2 4 8 16 32 64 128 256 512
+
+Use:
 
     PYTHIA_CHECKPOINT_STRIDE=1
 
-to save every step. That substantially increases local storage and later upload
-volume. A stride-8 first pass is meant to locate the interesting interval; a
-second bounded run can then save every step only inside that interval.
+to save every step. The stride-8 default fits much more comfortably beside the
+~417 GB deduplicated training mmap. A full every-step run should use more local
+disk or add an upload-and-retire stage before launch.
 
-Dense checkpoints default to weight/RNG-light saves (`no-save-optim` and
-`no-save-rng`) because retaining hundreds of Adam states would dominate the
-cost. These checkpoints are analysis artifacts, not restart points.
+Dense saves are analysis artifacts, not restart points: optimizer and RNG state
+are omitted/removed, while the model-state checkpoint is retained.
 
 ## Vast.ai workflow
 
-Install and authenticate the Vast CLI locally. Do not put API keys or Hugging
-Face tokens in this repository.
+Install/authenticate the Vast CLI locally. Keep API and Hugging Face credentials
+out of this repository.
 
     python -m pip install --upgrade vastai
     vastai set api-key ...
 
-Search:
+Search and inspect offers:
 
-    ./vast_search.sh
+    bash vast_search.sh
 
-Choose an offer manually, then:
+Choose an offer manually. Prefer an Ampere GPU such as RTX 3090, A5000, A6000,
+or A100 because the pinned 2022 stack uses CUDA 11.1 and PyTorch 1.8.1.
 
-    ./vast_create.sh OFFER_ID
+    bash vast_create.sh OFFER_ID
+    VAST_CREATE=1 bash vast_create.sh OFFER_ID
     vastai ssh-url INSTANCE_ID
 
-Copy or clone this branch on the instance and run:
+Clone this branch on the rental and run:
 
-    ./bootstrap_remote.sh
-    ./prepare_data.sh
-    ./run_0_512.sh
+    bash bootstrap_remote.sh
+    bash prepare_data.sh
+    bash run_0_512.sh
 
-The Vast scripts intentionally do not destroy the instance automatically.
-Verify the step-512 checkpoint and copy/upload retained artifacts first; then
-destroy the rental explicitly.
+The scripts do not destroy the rental. Verify/copy the retained artifacts and
+then destroy it explicitly.
 
 ## Disk policy
 
-The old Pythia deduplicated mmap repository is about 417 GB. The upstream
-unsharding recipe normally needs source shards plus a second merged copy.
-`prepare_data.sh` instead downloads one shard at a time, appends it to the
-final mmap, records a crash-safe byte boundary, and removes the shard.
+The old deduplicated Pythia mmap repository is about 417 GB. Upstream's normal
+unsharding recipe holds the source shards and a second merged copy.
+`prepare_data.sh` downloads one shard, appends it to the final mmap, records a
+crash-safe byte boundary, and deletes that shard.
 
-The search script therefore defaults to 600 GB of local disk for a stride-8
-run. Saving every step needs materially more disk unless checkpoints are
-uploaded and retired during training.
+The offer search defaults to 600 GB for the stride-8 run. Every-step retention
+requires substantially more unless checkpoints leave the instance while the run
+is active.
 
-## Required verification before calling these Pythia checkpoints
+## Required verification
 
-At the published anchor steps, compare this run against EleutherAI's released
-weights and losses. Record at least:
+At released anchor steps, compare the rerun against EleutherAI's published
+weights and losses. Retain:
 
-- exact Gym commit;
-- GPT-NeoX tag/commit;
-- upstream Pythia config hash;
-- generated overlay;
+- Gym commit;
+- GPT-NeoX v1.0 commit and local patch hash;
+- upstream and derived config hashes;
 - dataset mmap SHA-256;
-- tokenizer source/hash;
-- GPU model, driver and CUDA version;
+- tokenizer hash;
+- GPU, driver and CUDA versions;
 - microbatch and gradient accumulation;
-- per-anchor tensor error statistics and loss.
+- tensor-error statistics and loss at anchor checkpoints.
 
-Until that comparison exists, call the outputs a dense Pythia reproduction,
-not additional official Pythia checkpoints.
+Only after that comparison should any generated checkpoint be described as an
+additional Pythia checkpoint rather than a reproduction.
