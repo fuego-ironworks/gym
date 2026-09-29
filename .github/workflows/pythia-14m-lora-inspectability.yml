@@ -1,14 +1,6 @@
 name: Pythia 14M LoRA inspectability
 
 on:
-  push:
-    branches:
-      - pythia-14m-lora-inspectability
-    paths:
-      - .github/workflows/pythia-14m-lora-inspectability.yml
-      - llm/models/lora_differential.py
-      - llm/models/run_pythia_14m_lora_inspectability.py
-      - tests/test_rank_one_lora.py
   pull_request:
     paths:
       - .github/workflows/pythia-14m-lora-inspectability.yml
@@ -24,6 +16,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: pythia-14m-lora-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tensor-mechanics:
