@@ -167,3 +167,32 @@ Do not silently substitute the standard-Pile model. Either use the generic
 Transformers bridge when it accepts the deduped repository directly, or add an
 explicit local registry entry plus a parity test before relying on the legacy
 loader.
+
+
+## Baseline BME checkpoint sweep
+
+Before adding any LoRA, the existing 410M biomedical-engineering likelihood
+probe was rerun unchanged on `EleutherAI/pythia-14m-deduped`.
+
+The important early comparison is:
+
+| checkpoint | 14M deduped margin | 410M deduped margin |
+| ---: | ---: | ---: |
+| step512 | -0.157304 | -0.130098 |
+| step1000 | +0.118187 | +0.155012 |
+
+Both sizes therefore show the same aggregate sign change over this interval.
+For 14M, however, the full sweep shows that the positive aggregate is not
+stable: step10000 and step20000 remain positive, step30000 becomes negative,
+and the final step143000 margin is -0.076526.
+
+The pair-level 14M result also matters. At step512, pairs 1 and 2 are already
+positive (+0.271004 and +0.301241) while pair 3 is strongly negative
+(-1.044155). At step1000, pair 3 becomes much less negative (-0.213851), which
+is what moves the three-pair mean above zero. Treat the aggregate crossing as a
+finite contrast, not a single feature suddenly appearing.
+
+Exact receipt:
+`llm/models/runs/pythia-14m-deduped-bme-onset.md`.
+
+GitHub Actions run: 36583196045. No paid compute was used.
