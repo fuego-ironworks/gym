@@ -68,4 +68,5 @@ jobs:
           git add llm/models/runs/pythia-410m-bme-tuned-lens/
           git diff --cached --quiet && exit 0
           git commit -m "[pythia] Record BME Tuned Lens trajectory"
+          git pull --rebase origin pythia-bme-tuned-lens
           git push origin HEAD:pythia-bme-tuned-lens
