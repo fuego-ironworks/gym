@@ -327,3 +327,16 @@ Recent Vast changes relevant to an adapter:
 - **August 2026:** Vast added programmatic notification and webhook management for lifecycle and account events.
 
 Raw REST integration should pin observed behavior with tests because this surface is changing. The CLI/SDK source and the official OpenAPI repository provide the best current references when prose documentation disagrees.
+
+
+## Grease client
+
+Grease now has a matching thin REST client on
+`dilapidated-shed/grease:vast` in `commands/vast/vast.ysh` (PR #47,
+**Hook Grease into the Vast.ai REST API**). Its acceptance workflow runs the
+exact pinned Grease/YSH executable against an HTTP fixture and checks the
+request method, path, bearer header, JSON body, and missing-key failure.
+
+That client intentionally remains transport-only. `gym` should own job
+selection, receipt policy, retry/cleanup policy, and model qualification rather
+than pushing those decisions into the shell command.
