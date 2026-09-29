@@ -7,6 +7,7 @@ neox_dir="$work_root/gpt-neox"
 tokenizer="$work_root/20B_tokenizer.json"
 pythia_commit="a19eecb807ec2c79a39ebf18108816e6ffffc1d5"
 slim_patch="$here/neox-v1-slim-checkpoints.patch"
+converter_patch="$here/neox-v1-py38-converter.patch"
 
 mkdir -p "$work_root"
 
@@ -82,16 +83,24 @@ python3 -m pip install \
     python3 megatron/fused_kernels/setup.py install
 )
 
-# v1.0 exposes no_save_optim but its DeepSpeed save still emits optimizer
-# shards. Apply the pinned, analysis-only cleanup after each collective save.
-if git -C "$neox_dir" apply --check "$slim_patch" 2>/dev/null; then
-    git -C "$neox_dir" apply "$slim_patch"
-elif git -C "$neox_dir" apply --reverse --check "$slim_patch" 2>/dev/null; then
-    echo "slim-checkpoint patch already applied"
-else
-    echo "NeoX source does not match the pinned slim-checkpoint patch" >&2
-    exit 1
-fi
+apply_patch() {
+    local patch=$1
+    if git -C "$neox_dir" apply --check "$patch" 2>/dev/null; then
+        git -C "$neox_dir" apply "$patch"
+    elif git -C "$neox_dir" apply --reverse --check "$patch" 2>/dev/null; then
+        echo "patch already applied: $(basename "$patch")"
+    else
+        echo "NeoX source does not match pinned patch: $patch" >&2
+        exit 1
+    fi
+}
+
+# The first patch removes optimizer shards after the collective save and writes
+# the ready marker consumed by checkpoint_retire.py. The second preserves the
+# upstream converter while fixing its one Python-3.9-only type annotation so it
+# runs under the pinned Python 3.8 image.
+apply_patch "$slim_patch"
+apply_patch "$converter_patch"
 
 if [[ ! -f "$tokenizer" ]]; then
     curl --fail --location \
