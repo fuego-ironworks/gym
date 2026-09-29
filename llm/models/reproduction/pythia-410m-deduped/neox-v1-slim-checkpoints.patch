@@ -1,20 +1,25 @@
 diff --git a/megatron/checkpointing.py b/megatron/checkpointing.py
-index 0f17b0d..4e3a03d 100644
+index 0f17b0d..a75dbb2 100644
 --- a/megatron/checkpointing.py
 +++ b/megatron/checkpointing.py
-@@ -104,6 +104,15 @@ def save_ds_checkpoint(iteration, model, neox_args):
+@@ -194,6 +194,20 @@ def save_checkpoint(neox_args, iteration, model, optimizer, lr_scheduler):
  
-     # save checkpoint
-     model.save_checkpoint(neox_args.save, tag=tag, client_state=sd)
+     # Wait so everyone is done (necessary)
+     torch.distributed.barrier()
 +
-+    # DeepSpeed writes optimizer state even when NeoX's no_save_optim flag is
-+    # set. For analysis-only dense checkpoints on a single-GPU reproduction,
-+    # retain the model state but remove only optimizer-state shards after the
-+    # collective save has completed.
++    # Dense reproduction checkpoints are analysis artifacts, not restart
++    # points. DeepSpeed still writes optimizer shards when NeoX's
++    # no_save_optim flag is set, so remove them only after every rank has
++    # completed the save. Publish an atomic ready marker last; the Gym upload
++    # worker ignores any checkpoint without this marker.
 +    if neox_args.no_save_optim and torch.distributed.get_rank() == 0:
-+        checkpoint_dir = Path(neox_args.save) / tag
++        checkpoint_dir = Path(neox_args.save) / f"global_step{iteration}"
 +        for optimizer_state in checkpoint_dir.rglob("*optim_states.pt"):
 +            optimizer_state.unlink()
++        ready_tmp = checkpoint_dir / ".gym-ready.tmp"
++        ready_tmp.write_text(f"{iteration}\n")
++        os.replace(ready_tmp, checkpoint_dir / ".gym-ready")
++
+     if neox_args.keep_last_n_checkpoints is not None:
+         delete_old_checkpoints(neox_args.save, neox_args.keep_last_n_checkpoints)
  
-     # save config files
-     if torch.distributed.get_rank() == 0 and neox_args.config_files is not None:
