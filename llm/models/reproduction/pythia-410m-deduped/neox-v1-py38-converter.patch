@@ -1,0 +1,17 @@
+diff --git a/tools/convert_to_hf.py b/tools/convert_to_hf.py
+index b1b5239..9517f4a 100644
+--- a/tools/convert_to_hf.py
++++ b/tools/convert_to_hf.py
+@@ -15,6 +15,7 @@ import os
+ import sys
++from typing import List
+ 
+ import yaml
+ import argparse
+@@ -35,7 +36,7 @@ A script for converting saved NeoX Checkpoints to Huggingface (HF) compatible GPT-NeoX type models.
+ 
+ def load_partitions(
+     input_checkpoint_path, mp_partitions, layer_idx
+-) -> list[torch.Tensor]:
++) -> List[torch.Tensor]:
+     """Returns a list containing all weights in a given layer from a model (across MP partitions)"""
