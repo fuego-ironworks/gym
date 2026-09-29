@@ -71,7 +71,7 @@ jobs:
         run: |
           set -euo pipefail
           steps="${{ inputs.steps }}"
-          if [ -z "$steps" ]; then steps=1; fi
+          if [ -z "$steps" ]; then steps=2; fi
           python llm/models/run_pythia_14m_lora_inspectability.py \
             --steps "$steps" \
             --output-dir llm/models/runs/pythia-14m-lora-inspectability
