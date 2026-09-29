@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -8,6 +9,8 @@ import sys
 from pathlib import Path
 
 import torch
+import huggingface_hub
+from huggingface_hub import HfApi
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from lora_differential import (
@@ -16,6 +19,58 @@ from lora_differential import (
     run_test0,
     write_run_manifest,
 )
+
+
+def hf_source_receipt(model_name: str, revision: str) -> dict:
+    info = HfApi().model_info(model_name, revision=revision, files_metadata=True)
+    files = []
+    for sibling in sorted(info.siblings, key=lambda item: item.rfilename):
+        lfs = getattr(sibling, "lfs", None)
+        lfs_sha256 = None
+        if isinstance(lfs, dict):
+            lfs_sha256 = lfs.get("sha256")
+        elif lfs is not None:
+            lfs_sha256 = getattr(lfs, "sha256", None)
+        files.append(
+            {
+                "path": sibling.rfilename,
+                "size": getattr(sibling, "size", None),
+                "blob_id": getattr(sibling, "blob_id", None),
+                "lfs_sha256": lfs_sha256,
+            }
+        )
+    return {
+        "repository": model_name,
+        "requested_revision": revision,
+        "commit_sha": info.sha,
+        "files": files,
+    }
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def write_artifact_index(output_dir: Path) -> None:
+    entries = []
+    for path in sorted(output_dir.iterdir()):
+        if not path.is_file() or path.name == "artifact-index.json":
+            continue
+        entries.append(
+            {
+                "path": path.name,
+                "size": path.stat().st_size,
+                "sha256": file_sha256(path),
+            }
+        )
+    (output_dir / "artifact-index.json").write_text(
+        json.dumps({"schema": 1, "files": entries}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,18 +149,28 @@ def main() -> int:
         test0=test0,
         step_receipts=steps,
     )
+    manifest["model_source"] = hf_source_receipt(args.model, args.revision)
     manifest["runtime"] = {
         "python": platform.python_version(),
         "torch": torch.__version__,
         "transformers": __import__("transformers").__version__,
+        "huggingface_hub": huggingface_hub.__version__,
         "platform": platform.platform(),
+        "cpu_count": os.cpu_count(),
+        "torch_threads": torch.get_num_threads(),
         "github_sha": os.environ.get("GITHUB_SHA"),
+        "source_sha": os.environ.get("GYM_SOURCE_SHA"),
+        "github_repository": os.environ.get("GITHUB_REPOSITORY"),
+        "github_event_name": os.environ.get("GITHUB_EVENT_NAME"),
+        "github_workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),
         "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+        "github_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
     }
     (args.output_dir / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    write_artifact_index(args.output_dir)
 
     print(json.dumps({"output_dir": str(args.output_dir), "passed": manifest["passed"]}))
     return 0 if manifest["passed"] else 1
