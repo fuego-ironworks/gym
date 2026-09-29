@@ -66,6 +66,17 @@ python3 -m pip install -r "$neox_dir/requirements/requirements.txt"
 python3 -m pip install -r "$neox_dir/requirements/requirements-flashattention.txt"
 python3 -m pip install "protobuf==3.20.*" pyyaml
 
+# Pythia's historical NeoX image installed this exact Apex revision. Without
+# it NeoX falls back to DeepSpeed FusedAdam, which is a needless source of
+# optimizer-level divergence for a reproduction run.
+python3 -m pip install \
+    -v \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    --global-option="--cpp_ext" \
+    --global-option="--cuda_ext" \
+    "git+https://github.com/NVIDIA/apex.git@a651e2c24ecf97cbf367fd3f330df36760e1c597"
+
 (
     cd "$neox_dir"
     python3 megatron/fused_kernels/setup.py install
