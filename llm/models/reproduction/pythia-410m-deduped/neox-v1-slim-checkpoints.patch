@@ -1,0 +1,20 @@
+diff --git a/megatron/checkpointing.py b/megatron/checkpointing.py
+index 0f17b0d..4e3a03d 100644
+--- a/megatron/checkpointing.py
++++ b/megatron/checkpointing.py
+@@ -104,6 +104,15 @@ def save_ds_checkpoint(iteration, model, neox_args):
+ 
+     # save checkpoint
+     model.save_checkpoint(neox_args.save, tag=tag, client_state=sd)
++
++    # DeepSpeed writes optimizer state even when NeoX's no_save_optim flag is
++    # set. For analysis-only dense checkpoints on a single-GPU reproduction,
++    # retain the model state but remove only optimizer-state shards after the
++    # collective save has completed.
++    if neox_args.no_save_optim and torch.distributed.get_rank() == 0:
++        checkpoint_dir = Path(neox_args.save) / tag
++        for optimizer_state in checkpoint_dir.rglob("*optim_states.pt"):
++            optimizer_state.unlink()
+ 
+     # save config files
+     if torch.distributed.get_rank() == 0 and neox_args.config_files is not None:
