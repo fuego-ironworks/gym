@@ -2,11 +2,6 @@ name: Pythia 14M LoRA inspectability
 
 on:
   pull_request:
-    paths:
-      - .github/workflows/pythia-14m-lora-inspectability.yml
-      - llm/models/lora_differential.py
-      - llm/models/run_pythia_14m_lora_inspectability.py
-      - tests/test_rank_one_lora.py
   workflow_dispatch:
     inputs:
       steps:
@@ -24,9 +19,13 @@ concurrency:
 jobs:
   tensor-mechanics:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out Gym
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -51,6 +50,9 @@ jobs:
     steps:
       - name: Check out Gym
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -64,10 +66,12 @@ jobs:
             transformers==4.44.2 huggingface_hub==0.24.7
 
       - name: Run Test 0 and stepwise LoRA differential
+        env:
+          REQUESTED_STEPS: ${{ inputs.steps }}
         shell: bash
         run: |
           set -euo pipefail
-          steps="${{ inputs.steps }}"
+          steps="$REQUESTED_STEPS"
           if [ -z "$steps" ]; then steps=2; fi
           python llm/models/run_pythia_14m_lora_inspectability.py \
             --steps "$steps" \
