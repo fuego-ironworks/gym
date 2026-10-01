@@ -1,0 +1,19 @@
+key	value
+model	EleutherAI/pythia-410m-deduped
+checkpoint_step512	c63285838d79c704d97d3ef94674c47bd33aa17f
+checkpoint_step1000	a3b3aff9a656ab34fec3474eb60bb5b487639539
+checkpoint_step143000	c66f7467608ffee8fca0d28cf1f46a7574b53cec
+source_commit	9bbbc06b033914b6b27b468883a40fd4fe17f918
+tokenizer_revision	step143000
+torch	2.4.1+cpu
+transformers	4.44.2
+python	3.11.16
+device	cpu
+dtype	float32
+threads	2
+platform	Linux-6.17.0-1022-azure-x86_64-with-glibc2.39
+machine	x86_64
+scoring	separately encode prompt and continuation; mean target logp per continuation token
+quick	False
+script_sha256	05dc41e0d51dbebdd70499d16515758b53ae60ce715c1e877abcee4a94939067
+onset_source_sha256	e6ed8c56b73da6aa82b5092946f9d36033d536a7b0aafb5863e3bd0f79de3060
