@@ -37,3 +37,11 @@ The frozen-final lens is a transfer readout suggesting this window; it does
 not identify a checkpoint-native intermediate computation. Public lens
 provenance was refreshed and remains insufficient for early-checkpoint
 calibration. No calibrated-lens or training-origin claim is made.
+
+Fresh GitHub frozen-lens rerun succeeded on source
+eebabfebf80ae2df824bdc7d2adc6492721e6201:
+https://github.com/fuego-ironworks/gym/actions/runs/37228272119 . Its complete
+pair/readout/KL receipt is in the adjacent `pythia-410m-bme-tuned-lens`
+run-37228272119-attempt-1 directory. The receipt bot's subsequent
+action_required unit run is an execution-policy status, not a scientific
+failure; the same 21 tests were rerun successfully on that receipt commit.
