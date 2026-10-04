@@ -11,9 +11,10 @@ artifact. Training is float32; probes are float64 evaluations of those same
 float32 weights. Original float32 pilot runs and exact source commits are
 preserved in the accompanying archive. Tensor files stay outside Git.
 
-Test3 is the actual comparison of ΔW with BΔA, ΔBA and ΔBΔA at every step;
-Test4 compares actual activation/logit/score changes with the whole-model
-directional Jacobian prediction and its finite-update residual. Independent
+Test3 compares layer0 and layer2 at fixed two-example training data; Test4
+compares one and two examples at fixed layer0. Both additionally compare ΔW
+with BΔA, ΔBA and ΔBΔA at every step, and actual activation/logit/score changes
+with the whole-model directional Jacobian prediction and finite-update residual. Independent
 tiny-model finite differences check the derivative. `narrow-tangent-check.tsv`
 validates the saved final updates at path fraction1e-4: worst relative error
 5.82e-5 across42 checks. Earlier wider finite differences are retained in the
