@@ -1,0 +1,60 @@
+name: Recheck Pythia BME checkpoint interventions
+
+on:
+  push:
+    branches:
+      - pythia-bme-causal-recheck
+    paths:
+      - .github/workflows/pythia-bme-causal-recheck.yml
+      - llm/models/inspection/bme_causal_recheck.py
+      - llm/models/run_pythia_bme_onset.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pythia-bme-causal-recheck
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.44.2 huggingface_hub==0.24.7
+
+      - name: Reproduce contrast and perform interventions
+        run: python llm/models/inspection/bme_causal_recheck.py
+
+      - name: Upload exact-run receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bme-causal-recheck-${{ github.run_id }}-${{ github.run_attempt }}
+          path: llm/models/runs/pythia-410m-bme-causal-recheck/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
+          if-no-files-found: warn
+
+      - name: Commit complete receipt to the experiment branch
+        if: success()
+        run: |
+          git config user.name "gym pythia probe"
+          git config user.email "gym-pythia-probe@users.noreply.github.com"
+          git add llm/models/runs/pythia-410m-bme-causal-recheck/
+          git diff --cached --quiet && exit 0
+          git commit -m "[pythia] Record BME causal recheck results"
+          git push origin HEAD:pythia-bme-causal-recheck

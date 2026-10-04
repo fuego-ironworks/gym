@@ -1,0 +1,22 @@
+module BmeMargin
+
+-- Pure arithmetic after the externally scored candidate continuations.
+-- The model's log-probabilities and activation hooks are not implemented here.
+three_pair_margin :
+  {scalar : Type} →
+  (add : scalar → scalar → scalar) →
+  (subtract : scalar → scalar → scalar) →
+  (divide_by_three : scalar → scalar) →
+  (scalar, scalar) →
+  (scalar, scalar) →
+  (scalar, scalar) →
+  scalar
+three_pair_margin add subtract divide_by_three
+  (first_school, first_check)
+  (second_school, second_check)
+  (third_school, third_check) =
+    divide_by_three
+      (add
+        (add (subtract first_school first_check)
+             (subtract second_school second_check))
+        (subtract third_school third_check))

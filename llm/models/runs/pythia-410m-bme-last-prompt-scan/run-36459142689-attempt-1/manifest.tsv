@@ -1,0 +1,14 @@
+key	value
+model	EleutherAI/pythia-410m-deduped
+source_commit	52977fc9316bba8692362e9495ac7f1254d67914
+checkpoint_step512	c63285838d79c704d97d3ef94674c47bd33aa17f
+checkpoint_step1000	a3b3aff9a656ab34fec3474eb60bb5b487639539
+checkpoint_step143000	c66f7467608ffee8fca0d28cf1f46a7574b53cec
+tokenizer_revision	step143000
+torch	2.4.1+cpu
+transformers	4.44.2
+python	3.11.16
+device	cpu
+dtype	float32
+threads	2
+script_sha256	24e033c7f591c086617348929f81109b5f144719afdc470ff4364d12eae51990

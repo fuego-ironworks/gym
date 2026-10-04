@@ -1,0 +1,92 @@
+{
+  "source": {
+    "commit_sha": "cd8b0cc5e944e78e562afa43e28a526e22556068",
+    "expected_sha": null,
+    "tracked_tree_clean": true
+  },
+  "model": "EleutherAI/pythia-14m-deduped",
+  "model_revision": "0412c27fd5dcade8d1ff02273769acfb0c71421b",
+  "steps": 8,
+  "seed": 0,
+  "optimizer": "SGD",
+  "learning_rate": 0.05,
+  "adapter": {
+    "rank": 1,
+    "alpha": 1,
+    "initialization": "Kaiming A, zero B"
+  },
+  "train_texts": [
+    "The moon orbits the Earth.",
+    "Mars orbits the Sun."
+  ],
+  "probe_texts": {
+    "train_moon": "The moon orbits the Earth.",
+    "train_mars": "Mars orbits the Sun.",
+    "heldout_moon": "The Moon travels around the Earth.",
+    "heldout_mars": "The planet Mars travels around the Sun.",
+    "neutral_library": "The library opened at nine on Tuesday. The first visitor returned a book.",
+    "neutral_carpenter": "A carpenter measured the wooden board twice. Then she cut it to length.",
+    "neutral_rain": "The rain ended before the afternoon walk. The streets dried in the sun."
+  },
+  "bme_prompts": {
+    "bme_original": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?",
+    "bme_heldout": "I'm a senior in high school and taking BC calculus. I have a 3.8 GPA and a 760 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I swim and play basketball. What schools should I be looking at for biomedical engineering?",
+    "unrelated_school_question": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in English literature as a college major because I enjoy reading. I run track and I play soccer. What schools should I be looking at for English literature?"
+  },
+  "bme_pairs": [
+    [
+      "\n\nI would recommend looking at strong biomedical engineering programs first.",
+      "\n\nI would recommend checking the biomedical engineering job pipeline first."
+    ],
+    [
+      "\n\nThe next step is to compare biomedical engineering schools.",
+      "\n\nThe next step is to compare biomedical engineering job outcomes."
+    ],
+    [
+      "\n\nStart by finding colleges with strong biomedical engineering programs.",
+      "\n\nStart by checking whether biomedical engineering leads to the work you want."
+    ]
+  ],
+  "runtime": {
+    "torch": "2.4.1+cpu",
+    "transformers": "4.44.2",
+    "python": "3.12.14",
+    "threads": 2,
+    "provider": "local CPU",
+    "training_precision": "float32",
+    "probe_precision": "float64 from saved float32 weights"
+  },
+  "paid_execution_allowed": false,
+  "frozen_base": {
+    "tensor_count": 76,
+    "sha256": "7501bcbf999297814df57704bbc5b1efa32e7c0d0d1a3c1b2f89ee887c9079f3"
+  },
+  "artifacts": {
+    "probes.tsv": "f52af02c0f312069fa799514849998ec115adcecdb4ddc008b8d3d8ad8653a64",
+    "weights.tsv": "e9076fd0bfea151e2e8a05f9d257edb69ac632fb0f05b30946ef97199b4884a9",
+    "layer0_one/step-0008.pt": "55e7479209fdee374ec57bf673d8358403919bec1f65425e4311fd6b13312900",
+    "layer0_one/step-0007.pt": "519f5df0c386a894639772db1052c46673b132a08fac907e75fcd3e144f1308a",
+    "layer0_one/step-0006.pt": "8ef749203baa0b3b4faf2918b2e3268c0e70fa2e7e5cf13273dc001ca8096361",
+    "layer0_one/step-0005.pt": "f2ec0008736048ca505e029307130f261522ed56272bf53c8e2594bee6cbca8d",
+    "layer0_one/step-0004.pt": "2b062fd0bb3fd5574c3a3df3782e8c40a195e93168e612e1025b7e8ef3292447",
+    "layer0_one/step-0003.pt": "d95022ad12b290e44ae3116e7cdbb8c08638152a5a5bd2be46dff508bdcea21f",
+    "layer0_one/step-0002.pt": "066954f277284d189f0b2fd7e9c8d8650f83ebeba5311bf72c00c8820928ff19",
+    "layer0_one/step-0001.pt": "6773ac93b3daf103df1a328ec94585c17efc45e8f97e3ae356188234cdec16f9",
+    "layer2_two/step-0008.pt": "6c9cc0a98d452c4440f9a816339cb8cc9bf3bfe02069da191908258fa1af0a05",
+    "layer2_two/step-0007.pt": "d561bcf04254f217fd058d2ce40be29db8d86db7480d65a2a1c1129b57b7c39d",
+    "layer2_two/step-0006.pt": "b3046062e3c0ce88f86e6440c649fb4e54daeb67822bf2843b0a0a6ef8ab1dee",
+    "layer2_two/step-0005.pt": "aec0a2357b2b74676a68803a0d9973a9db348c65392fbcbd57c555aa0b267b6f",
+    "layer2_two/step-0004.pt": "57f162cead73f2e29408470133c027506315b036f9e051769a717bae12d94b40",
+    "layer2_two/step-0003.pt": "7b5fec54b2cc8c6c5e46cc337dd01802231f205e615b22d74d7767b0b6f4152c",
+    "layer2_two/step-0002.pt": "621b35e577bb613ce4a1a75b6e39ac44d948dd59e3155a9a450784f0ed50768c",
+    "layer2_two/step-0001.pt": "ec2b34146636fb0c058d2cf31784b886f30c3862767f6f39583b6859cc9c0f6e",
+    "layer0_two/step-0008.pt": "91a2f3e13e2678fe9490c6a4d28c1478d8663faa406b5a264c1f038bb0bf2e99",
+    "layer0_two/step-0007.pt": "d4a4050819e41bea00b52dc470bc9541f818d95d250655985ad61a7046158c6e",
+    "layer0_two/step-0006.pt": "96e8a5d599915fd4cdd0dc0b416cfaa4012575b958b5f2bcc2593c41342c06ba",
+    "layer0_two/step-0005.pt": "319f0590b8c33f7a813ea9970bce1715f231a054302b6614bc92ddd277f00977",
+    "layer0_two/step-0004.pt": "e8ae934cb73fdf17bbdd8fd9c330f259beec8397216b1406ff9e4b957df88d9d",
+    "layer0_two/step-0003.pt": "61331a9b1831d546963176fa3f8cda20346910ac917b73856cf08ccf4f2d903c",
+    "layer0_two/step-0002.pt": "45a2ae368a5434e6f8d792a3f2c70b70f52ee133dc20ff732bcd57d22634de77",
+    "layer0_two/step-0001.pt": "0b05ec0a54b92f832ada0dab058ccf1858662eb8056d6f39ee0c6d5f5a1c2bc9"
+  }
+}

@@ -1,0 +1,73 @@
+checkpoint	prompt	action	layer	margin	delta
+step512	bme_original	baseline		-0.13009838	
+step512	bme_heldout	baseline		-0.11833030	
+step512	grades_without_college	baseline		-0.17790191	
+step512	bme_job_question	baseline		-0.11534520	
+step512	help_people_other_major	baseline		-0.13986191	
+step512	unrelated_school_question	baseline		-0.14581090	
+step512	bme_original	zero_mlp	0	-0.04370041	+0.08639797
+step512	bme_heldout	zero_mlp	0	-0.01732310	+0.10100720
+step512	grades_without_college	zero_mlp	0	-0.07293916	+0.10496275
+step512	bme_job_question	zero_mlp	0	-0.05493062	+0.06041458
+step512	help_people_other_major	zero_mlp	0	-0.06697596	+0.07288595
+step512	unrelated_school_question	zero_mlp	0	-0.08262347	+0.06318743
+step512	bme_original	zero_mlp	1	-0.11162571	+0.01847267
+step512	bme_heldout	zero_mlp	1	-0.09991049	+0.01841981
+step512	bme_job_question	zero_mlp	1	-0.10167268	+0.01367252
+step512	unrelated_school_question	zero_mlp	1	-0.11811311	+0.02769779
+step512	bme_original	zero_mlp	2	-0.11974300	+0.01035538
+step512	bme_heldout	zero_mlp	2	-0.10603919	+0.01229111
+step512	bme_job_question	zero_mlp	2	-0.10811638	+0.00722882
+step512	unrelated_school_question	zero_mlp	2	-0.12565419	+0.02015671
+step512	bme_original	zero_mlp	3	-0.07099119	+0.05910719
+step512	bme_heldout	zero_mlp	3	-0.05789655	+0.06043375
+step512	bme_job_question	zero_mlp	3	-0.05668904	+0.05865616
+step512	unrelated_school_question	zero_mlp	3	-0.09208404	+0.05372686
+step512	bme_original	zero_mlp	8	-0.14110004	-0.01100166
+step512	bme_heldout	zero_mlp	8	-0.12685735	-0.00852705
+step512	bme_job_question	zero_mlp	8	-0.12577639	-0.01043119
+step512	unrelated_school_question	zero_mlp	8	-0.15732830	-0.01151740
+step512	bme_original	zero_mlp	16	-0.15314359	-0.02304521
+step512	bme_heldout	zero_mlp	16	-0.14116760	-0.02283730
+step512	bme_job_question	zero_mlp	16	-0.13909106	-0.02374586
+step512	unrelated_school_question	zero_mlp	16	-0.16837165	-0.02256075
+step512	bme_original	zero_mlp	23	-0.13443855	-0.00434017
+step512	bme_heldout	zero_mlp	23	-0.12194570	-0.00361540
+step512	bme_job_question	zero_mlp	23	-0.12073360	-0.00538840
+step512	unrelated_school_question	zero_mlp	23	-0.15017834	-0.00436744
+step1000	bme_original	baseline		0.15501241	
+step1000	bme_heldout	baseline		0.16089685	
+step1000	grades_without_college	baseline		-0.03743525	
+step1000	bme_job_question	baseline		0.11473734	
+step1000	help_people_other_major	baseline		0.15205895	
+step1000	unrelated_school_question	baseline		0.07837758	
+step1000	bme_original	zero_mlp	0	0.12766905	-0.02734336
+step1000	bme_heldout	zero_mlp	0	0.20847960	+0.04758275
+step1000	grades_without_college	zero_mlp	0	0.02225930	+0.05969455
+step1000	bme_job_question	zero_mlp	0	0.07877791	-0.03595943
+step1000	help_people_other_major	zero_mlp	0	0.07641763	-0.07564132
+step1000	unrelated_school_question	zero_mlp	0	0.13590478	+0.05752720
+step1000	bme_original	zero_mlp	1	0.13600987	-0.01900254
+step1000	bme_heldout	zero_mlp	1	0.13154591	-0.02935094
+step1000	bme_job_question	zero_mlp	1	0.07834022	-0.03639712
+step1000	unrelated_school_question	zero_mlp	1	-0.00157264	-0.07995022
+step1000	bme_original	zero_mlp	2	0.15265635	-0.00235606
+step1000	bme_heldout	zero_mlp	2	0.14503396	-0.01586289
+step1000	bme_job_question	zero_mlp	2	0.10212167	-0.01261567
+step1000	unrelated_school_question	zero_mlp	2	0.16199187	+0.08361429
+step1000	bme_original	zero_mlp	3	0.10724095	-0.04777146
+step1000	bme_heldout	zero_mlp	3	0.11610795	-0.04478890
+step1000	bme_job_question	zero_mlp	3	0.07530411	-0.03943323
+step1000	unrelated_school_question	zero_mlp	3	0.02285034	-0.05552724
+step1000	bme_original	zero_mlp	8	0.19681132	+0.04179891
+step1000	bme_heldout	zero_mlp	8	0.18897804	+0.02808119
+step1000	bme_job_question	zero_mlp	8	0.15884668	+0.04410934
+step1000	unrelated_school_question	zero_mlp	8	0.11008191	+0.03170433
+step1000	bme_original	zero_mlp	16	0.16321695	+0.00820454
+step1000	bme_heldout	zero_mlp	16	0.16683841	+0.00594156
+step1000	bme_job_question	zero_mlp	16	0.11923702	+0.00449968
+step1000	unrelated_school_question	zero_mlp	16	0.08806877	+0.00969119
+step1000	bme_original	zero_mlp	23	0.11012589	-0.04488652
+step1000	bme_heldout	zero_mlp	23	0.11313866	-0.04775819
+step1000	bme_job_question	zero_mlp	23	0.07107708	-0.04366026
+step1000	unrelated_school_question	zero_mlp	23	0.02347942	-0.05489816
