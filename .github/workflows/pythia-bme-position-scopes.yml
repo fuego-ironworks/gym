@@ -1,0 +1,52 @@
+name: Recheck Pythia BME layer-0 token positions
+
+on:
+  push:
+    branches:
+      - pythia-bme-causal-recheck
+    paths:
+      - .github/workflows/pythia-bme-position-scopes.yml
+      - llm/models/inspection/bme_position_scopes.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pythia-bme-position-scopes
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.44.2 huggingface_hub==0.24.7
+      - name: Test position-specific interventions
+        run: python llm/models/inspection/bme_position_scopes.py
+      - name: Upload exact-run receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bme-position-scopes-${{ github.run_id }}-${{ github.run_attempt }}
+          path: llm/models/runs/pythia-410m-bme-position-scopes/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
+          if-no-files-found: warn
+      - name: Commit complete receipt
+        if: success()
+        run: |
+          git config user.name "gym pythia probe"
+          git config user.email "gym-pythia-probe@users.noreply.github.com"
+          git add llm/models/runs/pythia-410m-bme-position-scopes/
+          git diff --cached --quiet && exit 0
+          git commit -m "[pythia] Record BME layer-0 position controls"
+          git push origin HEAD:pythia-bme-causal-recheck

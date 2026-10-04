@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 OFFICIAL_REPO = "EleutherAI/pythia-410m-deduped"
-OFFICIAL_STEPS = (0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
+OFFICIAL_STEPS = (0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1000)
 DEFAULT_PROBE = "The quick brown fox jumps over the lazy dog."
 
 
@@ -128,9 +128,11 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         converted = Path(directory)
         convert_checkpoint(args.neox_dir, args.checkpoint_dir, args.config_file, converted)
 
-        tokenizer = AutoTokenizer.from_pretrained(
-            args.official_repo, revision=revision
-        )
+        info = HfApi(token=os.environ.get('HF_TOKEN')).model_info(args.official_repo, revision=revision)
+        official_commit = getattr(info,'sha',None)
+        if not isinstance(official_commit,str) or len(official_commit)!=40:
+            raise VerificationError('missing immutable anchor identity')
+        tokenizer = AutoTokenizer.from_pretrained(args.official_repo, revision=official_commit)
         input_ids = tokenizer(args.probe, return_tensors="pt")["input_ids"]
 
         local_model = AutoModelForCausalLM.from_pretrained(converted)
@@ -138,15 +140,10 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         local_state = local_model.state_dict()
 
         official_model = AutoModelForCausalLM.from_pretrained(
-            args.official_repo, revision=revision
+            args.official_repo, revision=official_commit
         )
         official_loss = model_loss(official_model, input_ids)
         stats = tensor_error_stats(local_state, official_model.state_dict())
-
-        info = HfApi(token=os.environ.get("HF_TOKEN")).model_info(
-            args.official_repo, revision=revision
-        )
-        official_commit = getattr(info, "sha", None)
 
         result = {
             "schema": 1,

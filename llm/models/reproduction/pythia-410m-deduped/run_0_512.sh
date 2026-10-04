@@ -15,7 +15,7 @@ microbatch="${PYTHIA_MICROBATCH:-8}"
 stride="${PYTHIA_CHECKPOINT_STRIDE:-8}"
 hf_repo="${PYTHIA_HF_REPO:-}"
 hf_revision="${PYTHIA_HF_REVISION:-main}"
-remote_prefix="${PYTHIA_REMOTE_PREFIX:-dense-0-512}"
+remote_prefix="${PYTHIA_REMOTE_PREFIX:-dense-0-1000}"
 
 base_config="$repo_root/llm/models/upstream/pythia/pythia-410m-deduped.yml"
 derived_config="$run_dir/pythia-410m-deduped-vast.yml"
@@ -69,7 +69,7 @@ python3 "$here/make_dense_config.py" \
 
 echo
 echo "Nominal train-iters remains 143000."
-echo "Derived config exits at step 512 after checkpointing."
+echo "Derived config exits at step 1000 after checkpointing."
 if [[ -n "$hf_repo" ]]; then
     echo "Ready checkpoints will be archived, hash-verified on Hugging Face, then retired locally."
 elif [[ "$stride" == "1" ]]; then
@@ -97,7 +97,7 @@ if [[ -n "$hf_repo" ]]; then
         --repo "$hf_repo" \
         --revision "$hf_revision" \
         --remote-prefix "$remote_prefix" \
-        --stop-step 512 \
+        --stop-step 1000 \
         > >(tee "$run_dir/checkpoint-upload.log") 2>&1 &
     upload_pid=$!
 fi
@@ -143,18 +143,18 @@ if [[ -n "$upload_pid" ]]; then
 fi
 
 if [[ -n "$hf_repo" ]]; then
-    receipt="$run_dir/checkpoint-receipts/step-000512.json"
+    receipt="$run_dir/checkpoint-receipts/step-001000.json"
     if [[ ! -f "$receipt" ]]; then
-        echo "training exited without a verified step-512 upload receipt" >&2
+        echo "training exited without a verified step-1000 upload receipt" >&2
         exit 1
     fi
-    echo "step-512 checkpoint uploaded and hash-verified: $receipt"
+    echo "step-1000 checkpoint uploaded and hash-verified: $receipt"
 else
-    if [[ ! -d "$save_dir/global_step512" ]]; then
-        echo "training exited without a global_step512 checkpoint" >&2
+    if [[ ! -d "$save_dir/global_step1000" ]]; then
+        echo "training exited without a global_step1000 checkpoint" >&2
         exit 1
     fi
-    echo "step-512 checkpoint present: $save_dir/global_step512"
+    echo "step-1000 checkpoint present: $save_dir/global_step1000"
 fi
 
 echo "run complete; inspect verification receipts before destroying the rental"

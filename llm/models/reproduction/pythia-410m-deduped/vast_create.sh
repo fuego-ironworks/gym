@@ -2,7 +2,7 @@
 set -euo pipefail
 
 offer_id="${1:?usage: vast_create.sh OFFER_ID}"
-disk_gb="${VAST_DISK_GB:-600}"
+disk_gb="${VAST_DISK_GB:-650}"
 image="${VAST_IMAGE:-nvidia/cuda:11.1.1-devel-ubuntu20.04}"
 label="${VAST_LABEL:-pythia-410m-early-checkpoints}"
 
@@ -16,13 +16,11 @@ EOF
 if [[ "${VAST_CREATE:-0}" != "1" ]]; then
     echo
     echo "dry run only"
-    echo "Set VAST_CREATE=1 to execute the rental."
+    echo "GPU execution is disabled: no passing trusted GPU preflight exists."
     echo
     echo "vastai create instance $offer_id --image $image --disk $disk_gb --label $label"
     exit 0
 fi
 
-vastai create instance "$offer_id" \
-    --image "$image" \
-    --disk "$disk_gb" \
-    --label "$label"
+echo "BLOCKED: VAST_CREATE cannot bypass the trusted GPU preflight and explicit authorization gate." >&2
+exit 1

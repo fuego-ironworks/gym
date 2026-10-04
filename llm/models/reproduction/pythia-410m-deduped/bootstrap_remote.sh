@@ -60,8 +60,8 @@ if [[ ! -d "$neox_dir/.git" ]]; then
     git clone https://github.com/EleutherAI/gpt-neox.git "$neox_dir"
 fi
 git -C "$neox_dir" fetch --tags origin
-git -C "$neox_dir" checkout --detach v1.0
-git -C "$neox_dir" reset --hard v1.0
+git -C "$neox_dir" checkout --detach 71df4d5017f9f4919566a11454fe3a507ffdc632
+git -C "$neox_dir" reset --hard 71df4d5017f9f4919566a11454fe3a507ffdc632
 
 python3 -m pip install -r "$neox_dir/requirements/requirements.txt"
 python3 -m pip install -r "$neox_dir/requirements/requirements-flashattention.txt"

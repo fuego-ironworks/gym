@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 READY_MARKER = ".gym-ready"
-STOP_STEP = 512
+STOP_STEP = 1000
 
 
 class CheckpointError(RuntimeError):

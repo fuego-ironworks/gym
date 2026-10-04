@@ -11,8 +11,14 @@ import yaml
 ORIGINAL_SEQUENCES_PER_STEP = 32 * 32
 ORIGINAL_TRAIN_ITERS = 143_000
 ORIGINAL_SEED = 1234
-STOP_STEP = 512
-OFFICIAL_EARLY_STEPS = (0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512)
+STOP_STEP = 1000
+OFFICIAL_EARLY_STEPS = (0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1000)
+
+
+def checkpoint_schedule(stride=8):
+    if stride <= 0 or (STOP_STEP - 512) % stride:
+        raise ValueError('stride must divide the 512–1000 interval')
+    return sorted(set(OFFICIAL_EARLY_STEPS) | set(range(512, STOP_STEP + 1, stride)))
 
 
 def require_original(config: dict) -> None:
@@ -55,10 +61,7 @@ def build_config(
             f"microbatch {microbatch} does not divide "
             f"{ORIGINAL_SEQUENCES_PER_STEP}"
         )
-    if checkpoint_stride <= 0 or STOP_STEP % checkpoint_stride:
-        raise ValueError(
-            f"checkpoint stride must be a positive divisor of {STOP_STEP}"
-        )
+    schedule = checkpoint_schedule(checkpoint_stride)
 
     gas = ORIGINAL_SEQUENCES_PER_STEP // microbatch
 
@@ -69,8 +72,8 @@ def build_config(
             "train_micro_batch_size_per_gpu": microbatch,
             "gas": gas,
             "checkpoint-scale": "linear",
-            "checkpoint-factor": checkpoint_stride,
-            "extra-save-iters": list(OFFICIAL_EARLY_STEPS),
+            "checkpoint-factor": 1000,
+            "extra-save-iters": schedule,
             # NeoX checks this after the checkpoint save in training.py.
             "exit-interval": STOP_STEP,
             "save": save_dir,

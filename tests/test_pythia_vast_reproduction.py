@@ -69,7 +69,7 @@ class PythiaVastNonBillingTests(unittest.TestCase):
             self.assertIn("dry run only", run.stdout)
             self.assertFalse(marker.exists(), "dry run invoked Vast CLI")
 
-    def test_vast_create_opt_in_calls_only_create_instance(self) -> None:
+    def test_vast_opt_in_cannot_bypass_missing_gpu_preflight(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
             log = work / "args"
@@ -87,10 +87,23 @@ class PythiaVastNonBillingTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
             )
-            self.assertEqual(0, run.returncode, run.stderr)
-            args = log.read_text(encoding="utf-8").splitlines()
-            self.assertEqual(["create", "instance", "12345"], args[:3])
-            self.assertNotIn("destroy", args)
+            self.assertNotEqual(0, run.returncode)
+            self.assertIn('BLOCKED',run.stderr)
+            self.assertFalse(log.exists())
+
+    def test_dense_schedule_covers_interval_without_early_overretention(self):
+        config=load_module('dense_config',REPRO/'make_dense_config.py')
+        schedule=config.checkpoint_schedule(8)
+        self.assertEqual([512+8*i for i in range(62)], [x for x in schedule if x>=512])
+        self.assertEqual(72,len(schedule))
+        derived=config.build_config(ROOT/'llm/models/upstream/pythia/pythia-410m-deduped.yml',
+            data_prefix='/data/pile',tokenizer='/data/tokenizer',save_dir='/save',microbatch=8,
+            checkpoint_stride=8,slim_checkpoints=True)
+        self.assertEqual(1000,derived['exit-interval'])
+        self.assertEqual(143000,derived['train-iters'])
+        self.assertEqual(143000,derived['lr-decay-iters'])
+        self.assertEqual(1024,derived['gas']*derived['train_micro_batch_size_per_gpu'])
+        self.assertEqual(schedule,derived['extra-save-iters'])
 
     def test_vast_search_cannot_create_instance(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
