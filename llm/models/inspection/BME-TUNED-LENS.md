@@ -45,11 +45,11 @@ A training invocation should follow the upstream CLI shape, for example:
 
     python -m tuned_lens train \
       --model.name EleutherAI/pythia-410m-deduped \
-      --model.revision step512 \
+      --model.revision c63285838d79c704d97d3ef94674c47bd33aa17f \
       --data.name /absolute/path/to/lens-training.jsonl \
       --output /outside/git/pythia-bme-lenses/step512
 
-Repeat with step1000 and no other setting changes.
+Repeat with step1000 SHA a3b3aff9a656ab34fec3474eb60bb5b487639539 and no other setting changes.
 
 Do not put params.pt in Gym Git history. Record the training-data SHA-256,
 exact Tuned Lens commit, exact Pythia checkpoint hash, complete CLI/settings,
@@ -75,5 +75,17 @@ questions are:
 - Does the unrelated school control show a similar transition?
 - How large is lens-to-model KL at the layer where the sign changes?
 
-Only after this stage should SAELens feature discovery begin, targeted at the
-layers/regions supported by the causal recheck and the lens trajectory.
+The public config refreshed on 2026-10-04 still has a null base_model_revision
+and no unembedding hash. No trustworthy step512/step1000 lens artifact was
+obtained. Training two calibrated lenses requires an independently evaluated
+corpus and generalization/calibration checks; it is not a prerequisite for
+finishing this transfer diagnostic. Checkpoint-specific mode now requires the
+immutable checkpoint SHA and a nonempty matching unembedding hash.
+
+The frozen-final result narrows attention toward blocks 16–18. It does not
+localize a native intermediate computation. Finish this stage on those terms.
+The accompanying causal experiment is a 2×2 replacement of final-token layer-0 MLP
+output and blocks 16–18, with a zero-output extension, in both checkpoint
+directions. Held-out BME and unrelated/neutral controls discriminate cooperating
+downstream changes from an incidental general-language effect. SAE discovery
+is not justified by this diagnostic alone.

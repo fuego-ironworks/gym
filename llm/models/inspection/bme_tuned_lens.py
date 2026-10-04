@@ -197,7 +197,7 @@ def load_public_frozen_lens():
     return lens, metadata
 
 
-def read_checkpoint_lens(lens_dir, checkpoint):
+def read_checkpoint_lens(lens_dir, checkpoint, checkpoint_sha=None):
     config_path = Path(lens_dir) / "config.json"
     params_path = Path(lens_dir) / "params.pt"
     if not config_path.is_file() or not params_path.is_file():
@@ -207,16 +207,19 @@ def read_checkpoint_lens(lens_dir, checkpoint):
         raise RuntimeError(
             f"{checkpoint}: wrong base model in lens config"
         )
-    if config.get("base_model_revision") != checkpoint:
+    if checkpoint_sha is None or config.get("base_model_revision") != checkpoint_sha:
         raise RuntimeError(
             f"{checkpoint}: lens revision "
-            f"{config.get('base_model_revision')!r} does not match checkpoint"
+            f"{config.get('base_model_revision')!r} does not match immutable checkpoint {checkpoint_sha}"
         )
+    expected_hash = config.get('unembed_hash')
+    if not isinstance(expected_hash,str) or len(expected_hash)!=64 or any(c not in '0123456789abcdef' for c in expected_hash):
+        raise RuntimeError(f'{checkpoint}: missing verified unembedding hash')
     return config, params_path
 
 
-def load_checkpoint_lens(model, lens_dir, checkpoint):
-    config, params_path = read_checkpoint_lens(lens_dir, checkpoint)
+def load_checkpoint_lens(model, lens_dir, checkpoint, checkpoint_sha=None):
+    config, params_path = read_checkpoint_lens(lens_dir, checkpoint, checkpoint_sha)
     current_hash = Unembed(model).unembedding_hash()
     expected_hash = config.get("unembed_hash")
     if expected_hash and expected_hash != current_hash:
@@ -376,7 +379,7 @@ def run(args):
             lens_metadata = dict(frozen_metadata)
         else:
             lens, lens_metadata = load_checkpoint_lens(
-                model, Path(args.lens_root) / checkpoint, checkpoint
+                model, Path(args.lens_root) / checkpoint, checkpoint, resolved[checkpoint]
             )
 
         for prompt_name, prompt in PROMPTS.items():
