@@ -1,5 +1,10 @@
 # Idriç attempt: aggregate three BME candidate pairs
 
+2026-10-04 extension: `factorial.py` reuses the same explicitly recorded
+PyTorch foreign-runtime gap for the layer-0 × blocks16–18 intervention.
+It retains pair and neutral scores, activation/logit movement and self-patch
+identity. The Idriç arithmetic slice still does not execute model hooks.
+
 Purpose: compute the arithmetic mean of three `(school_mean − check_mean)`
 scores. The input means must already come from the exact teacher-forced Pythia
 model and tokenizer. This pure slice cannot load models or perform interventions.

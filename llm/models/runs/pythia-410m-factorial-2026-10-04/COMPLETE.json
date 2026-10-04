@@ -1,0 +1,58 @@
+{
+  "source_sha": "46867a58151a89774d129af327784d88b50f3c79",
+  "model": "EleutherAI/pythia-410m-deduped",
+  "checkpoints": {
+    "step512": "c63285838d79c704d97d3ef94674c47bd33aa17f",
+    "step1000": "a3b3aff9a656ab34fec3474eb60bb5b487639539"
+  },
+  "tokenizer_sha": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+  "window": [
+    16,
+    17,
+    18
+  ],
+  "early_token": "final prompt token only",
+  "late_intervention": "recipient blocks 16\u201318 replaced with donor blocks; other parameters native",
+  "prompts": {
+    "bme_original": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?",
+    "bme_heldout": "I'm a senior in high school and taking BC calculus. I have a 3.8 GPA and a 760 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I swim and play basketball. What schools should I be looking at for biomedical engineering?",
+    "grades_without_college": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I want to help people and run track and play soccer. What kinds of work should I look into?",
+    "bme_job_question": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a job because I want to help people. I run track and I play soccer. What jobs should I be looking at in biomedical engineering?",
+    "help_people_other_major": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in environmental engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for environmental engineering?",
+    "unrelated_school_question": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in English literature as a college major because I enjoy reading. I run track and I play soccer. What schools should I be looking at for English literature?"
+  },
+  "pairs": [
+    [
+      "\n\nI would recommend looking at strong biomedical engineering programs first.",
+      "\n\nI would recommend checking the biomedical engineering job pipeline first."
+    ],
+    [
+      "\n\nThe next step is to compare biomedical engineering schools.",
+      "\n\nThe next step is to compare biomedical engineering job outcomes."
+    ],
+    [
+      "\n\nStart by finding colleges with strong biomedical engineering programs.",
+      "\n\nStart by checking whether biomedical engineering leads to the work you want."
+    ]
+  ],
+  "neutral": [
+    [
+      "The library opened at nine on Tuesday.",
+      " The first visitor returned a book."
+    ],
+    [
+      "A carpenter measured the wooden board twice.",
+      " Then she cut it to length."
+    ],
+    [
+      "The rain ended before the afternoon walk.",
+      " The streets dried in the sun."
+    ]
+  ],
+  "torch": "2.4.1+cpu",
+  "transformers": "4.44.2",
+  "python": "3.12.14",
+  "provider": "local CPU",
+  "paid_execution_allowed": false,
+  "self_patch_passed": true
+}

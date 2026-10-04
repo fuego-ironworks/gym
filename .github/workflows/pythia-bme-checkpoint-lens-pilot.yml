@@ -1,0 +1,163 @@
+name: Pythia checkpoint Tuned Lens pilot
+
+on:
+  push:
+    branches:
+      - pythia-bme-tuned-lens
+    paths:
+      - .github/workflows/pythia-bme-checkpoint-lens-pilot.yml
+      - llm/models/inspection/prepare_pile_lens_corpus.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pythia-bme-checkpoint-lens-pilot
+  cancel-in-progress: false
+
+jobs:
+  checkpoint-lenses:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONPATH: ${{ github.workspace }}/vendor/tuned-lens
+      TUNED_LENS_COMMIT: dcb38a532c84817645a7a59933424067f1144c9a
+    steps:
+      - name: Checkout Gym
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Checkout pinned Tuned Lens fork
+        uses: actions/checkout@v4
+        with:
+          repository: fuego-ironworks/tuned-lens
+          ref: ${{ env.TUNED_LENS_COMMIT }}
+          path: vendor/tuned-lens
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU training stack
+        run: |
+          python -m pip install --disable-pip-version-check torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check \
+            transformers==4.44.2 \
+            huggingface_hub==0.24.7 \
+            datasets==2.17.1 \
+            torchdata==0.7.1 \
+            accelerate==0.34.2 \
+            simple-parsing==0.1.5 \
+            flatten-dict==0.4.2 \
+            plotly==5.24.1 \
+            wandb==0.17.9
+
+      - name: Prepare exact Pile validation corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATASET_SHA="$(python - <<'PY'
+          from huggingface_hub import HfApi
+          print(HfApi().dataset_info("EleutherAI/pile_val_test").sha)
+          PY
+          )"
+          echo "PILE_DATASET_SHA=$DATASET_SHA" >> "$GITHUB_ENV"
+          python llm/models/inspection/prepare_pile_lens_corpus.py \
+            --revision "$DATASET_SHA" \
+            --target-tokens 65536 \
+            --output "$RUNNER_TEMP/pile-lens.jsonl" \
+            --manifest "$RUNNER_TEMP/pile-lens-manifest.tsv"
+
+      - name: Train step512 lens
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m tuned_lens train \
+            --model.name EleutherAI/pythia-410m-deduped \
+            --model.revision step512 \
+            --data.name "$RUNNER_TEMP/pile-lens.jsonl" \
+            --max_seq_len 256 \
+            --precision float32 \
+            --per_gpu_batch_size=1 \
+            --num_steps 16 \
+            --tokens_per_step 2048 \
+            --seed 42 \
+            --output "$RUNNER_TEMP/lenses/step512"
+
+      - name: Train step1000 lens
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m tuned_lens train \
+            --model.name EleutherAI/pythia-410m-deduped \
+            --model.revision step1000 \
+            --data.name "$RUNNER_TEMP/pile-lens.jsonl" \
+            --max_seq_len 256 \
+            --precision float32 \
+            --per_gpu_batch_size=1 \
+            --num_steps 16 \
+            --tokens_per_step 2048 \
+            --seed 42 \
+            --output "$RUNNER_TEMP/lenses/step1000"
+
+      - name: Evaluate checkpoint-specific lenses
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="llm/models/runs/pythia-410m-bme-checkpoint-lens-pilot/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}"
+          mkdir -p "$OUT"
+          cp "$RUNNER_TEMP/pile-lens-manifest.tsv" "$OUT/training-corpus.tsv"
+          cp "$RUNNER_TEMP/lenses/step512/config.json" "$OUT/step512-lens-config.json"
+          cp "$RUNNER_TEMP/lenses/step1000/config.json" "$OUT/step1000-lens-config.json"
+          cat > "$OUT/training-settings.tsv" <<EOF
+          field	value
+          tuned_lens_commit	$TUNED_LENS_COMMIT
+          source_dataset	EleutherAI/pile_val_test
+          source_dataset_revision	$PILE_DATASET_SHA
+          lens_training_steps	16
+          tokens_per_step	2048
+          nominal_training_tokens	32768
+          max_seq_len	256
+          precision	float32
+          per_gpu_batch_size	1
+          seed	42
+          optimizer	upstream default SGD
+          objective	upstream default KL, token_shift 0
+          scope	pilot calibration, not paper-scale lens training
+          EOF
+          python llm/models/inspection/bme_tuned_lens.py \
+            --mode checkpoint-specific \
+            --lens-root "$RUNNER_TEMP/lenses" \
+            --output "$OUT"
+
+      - name: Upload exact-run receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pythia-bme-checkpoint-lens-pilot-${{ github.run_id }}-${{ github.run_attempt }}
+          path: llm/models/runs/pythia-410m-bme-checkpoint-lens-pilot/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
+          if-no-files-found: warn
+
+      - name: Upload ephemeral lens weights
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pythia-checkpoint-lens-weights-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lenses/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Commit complete receipt
+        if: success()
+        run: |
+          git config user.name "gym pythia probe"
+          git config user.email "gym-pythia-probe@users.noreply.github.com"
+          git add llm/models/runs/pythia-410m-bme-checkpoint-lens-pilot/
+          git diff --cached --quiet && exit 0
+          git commit -m "[pythia] Record checkpoint Tuned Lens pilot"
+          git pull --rebase origin pythia-bme-tuned-lens
+          git push origin HEAD:pythia-bme-tuned-lens
