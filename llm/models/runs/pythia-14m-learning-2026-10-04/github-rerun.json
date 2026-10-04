@@ -1,0 +1,21 @@
+{
+  "workflow_run": 37228389389,
+  "source_sha": "330fcf4704ae94ad9fcbe6c8dab51161ba17610b",
+  "url": "https://github.com/fuego-ironworks/gym/actions/runs/37228389389",
+  "observed_provider": "GitHub-hosted ubuntu-latest CPU runner",
+  "artifact_id": 11313440960,
+  "artifact_sha256": "138e20dd4a3d7e18e48ba09ddc601e0c9f4221a19f11089814e07e8ac508b979",
+  "original_manifest_provider_field": "local CPU",
+  "provider_field_erratum": "The original manifest has a constant label. This supplementary receipt records the observed provider and preserves the original bytes.",
+  "steps": 8,
+  "learning_rate": 0.01,
+  "seed": 0,
+  "layer2_two": {
+    "heldout_moon_loss_before": 4.844955098924317,
+    "heldout_moon_loss_after": 4.554156450993797,
+    "heldout_mars_loss_before": 5.992972437423672,
+    "heldout_mars_loss_after": 5.762310800449211,
+    "heldout_moon_final_logit_residual_fraction": 0.13119689691233566,
+    "heldout_mars_final_logit_residual_fraction": 0.16050028454581608
+  }
+}

@@ -57,7 +57,9 @@ manufactured here. No paid call occurred.
 
 Disk planning inputs:~417GB merged mmap,≤6GB incoming shard,≤2GB per slim
 checkpoint,≤2GB archive,≤4GB conversion/anchor cache,≤30GB environment.
-Conservative no-retirement bound:about603GB with72 checkpoints. Request≥650GB.
+Slim-retention subtotal:about603GB with72 checkpoints. Add an8GB planning
+reserve for transient optimizer shards before slim-save deletion:about611GB.
+Request≥650GB. The transient reserve also requires actual preflight measurement.
 Streaming retirement should reduce it, but backlog/failure needs measurement.
 These estimates are not measured GPU preflight evidence.
 

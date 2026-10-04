@@ -7,6 +7,7 @@ import argparse
 import csv
 import copy
 import json
+import os
 import platform
 import re
 import sys
@@ -187,7 +188,10 @@ def main():
         'train_texts':TRAIN,'probe_texts':TEXTS,
         'bme_prompts':{n:bme.PROMPTS[n] for n in ('bme_original','bme_heldout','unrelated_school_question')},
         'bme_pairs':bme.PAIRS,'runtime':{'torch':torch.__version__,'transformers':transformers.__version__,
-        'python':platform.python_version(),'threads':2,'provider':'local CPU',
+        'python':platform.python_version(),'threads':2,
+        'provider':'GitHub CPU' if os.environ.get('GITHUB_ACTIONS')=='true' else 'local CPU',
+        'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+        'github_run_attempt':os.environ.get('GITHUB_RUN_ATTEMPT'),
         'training_precision':'float32','probe_precision':'float64 from saved float32 weights'},
         'paid_execution_allowed':False,'frozen_base':named_hashes_digest(frozen),
         'artifacts':{str(p.relative_to(args.output)):file_sha256(p) for p in args.output.rglob('*') if p.is_file()}}

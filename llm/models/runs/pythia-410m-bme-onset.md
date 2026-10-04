@@ -1,4 +1,4 @@
-# Pythia 410M biomedical-engineering onset sweep
+# Pythia biomedical-engineering onset sweep
 
 - model: `EleutherAI/pythia-410m-deduped`
 - experiment: raw base-model checkpoint sweep; no RAG, adapter, system message, chat template, or few-shot examples
