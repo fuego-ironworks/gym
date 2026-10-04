@@ -1,30 +1,26 @@
-name: Sweep Pythia 14M deduped BME onset
+name: Compare Pythia 14M BME step512 to step1000
 
 on:
   push:
     branches:
       - pythia-14m-lora-inspectability
     paths:
-      - .github/workflows/pythia-14m-bme-onset.yml
-      - llm/models/run_pythia_bme_onset.py
+      - .github/workflows/pythia-14m-bme-512-1000.yml
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: pythia-14m-bme-onset
-  cancel-in-progress: false
-
 jobs:
-  sweep:
+  compare:
     runs-on: ubuntu-latest
-    timeout-minutes: 330
+    timeout-minutes: 60
     env:
       HF_HUB_DISABLE_TELEMETRY: "1"
       TOKENIZERS_PARALLELISM: "false"
       PYTHIA_BME_MODEL: EleutherAI/pythia-14m-deduped
-      PYTHIA_BME_OUTPUT: llm/models/runs/pythia-14m-deduped-bme-onset.md
+      PYTHIA_BME_STEPS: "512,1000"
+      PYTHIA_BME_OUTPUT: llm/models/runs/pythia-14m-deduped-bme-step512-1000.md
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,37 +32,30 @@ jobs:
           python-version: "3.11"
 
       - name: Install CPU inference stack
-        shell: bash
         run: |
-          set -euo pipefail
           python -m pip install --disable-pip-version-check \
             torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
           python -m pip install --disable-pip-version-check \
             transformers==4.44.2 huggingface_hub==0.24.7
 
-      - name: Run the same BME checkpoint sweep used for 410M
-        shell: bash
-        run: |
-          set -euo pipefail
-          python llm/models/run_pythia_bme_onset.py
+      - name: Score step512 and step1000
+        run: python llm/models/run_pythia_bme_onset.py
 
-      - name: Upload sweep receipt
+      - name: Upload receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pythia-14m-bme-onset-${{ github.run_id }}-${{ github.run_attempt }}
-          path: llm/models/runs/pythia-14m-deduped-bme-onset.md
+          name: pythia-14m-bme-512-1000-${{ github.run_id }}
+          path: llm/models/runs/pythia-14m-deduped-bme-step512-1000.md
           if-no-files-found: warn
 
-      - name: Commit sweep receipt
+      - name: Commit receipt
         if: success()
-        shell: bash
         run: |
-          set -euo pipefail
           git config user.name "gym pythia probe"
           git config user.email "gym-pythia-probe@users.noreply.github.com"
-          git add llm/models/runs/pythia-14m-deduped-bme-onset.md
+          git add llm/models/runs/pythia-14m-deduped-bme-step512-1000.md
           git diff --cached --quiet && exit 0
-          git commit -m "[pythia-14m] Record BME onset checkpoint sweep"
+          git commit -m "[pythia-14m] Record step512/1000 BME comparison"
           git pull --rebase origin pythia-14m-lora-inspectability
           git push origin HEAD:pythia-14m-lora-inspectability

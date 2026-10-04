@@ -17,8 +17,8 @@ import torch
 from huggingface_hub import HfApi
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-MODEL = "EleutherAI/pythia-410m-deduped"
-OUTPUT = Path(__file__).with_name("runs") / "pythia-410m-bme-onset.md"
+MODEL = os.environ.get("PYTHIA_BME_MODEL", "EleutherAI/pythia-410m-deduped")
+OUTPUT = Path(os.environ.get("PYTHIA_BME_OUTPUT", str(Path(__file__).with_name("runs") / "pythia-410m-bme-onset.md")))
 
 PROMPT = (
     "I'm a junior in high school and will be taking AB calculus next year. "
@@ -56,6 +56,13 @@ def requested_steps():
     return [int(x.strip()) for x in raw.split(",") if x.strip()]
 
 
+def requested_generation_steps():
+    raw = os.environ.get("PYTHIA_BME_GENERATE_STEPS", "").strip()
+    if not raw:
+        return []
+    return [int(x.strip()) for x in raw.split(",") if x.strip()]
+
+
 def available_steps():
     refs = HfApi().list_repo_refs(MODEL)
     out = set()
@@ -84,6 +91,46 @@ def continuation_stats(model, tokenizer, prompt, continuation):
     total = sum(token_logps)
     mean = total / len(token_logps)
     return total, mean, len(token_logps)
+
+
+def generate_step(step, tokenizer):
+    cache_dir = tempfile.mkdtemp(prefix=f"pythia-generate-{step}-")
+    try:
+        revision = f"step{step}"
+        info = HfApi().model_info(MODEL, revision=revision)
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL,
+            revision=info.sha,
+            cache_dir=cache_dir,
+        )
+        model.eval()
+        encoded = tokenizer(PROMPT, return_tensors="pt", add_special_tokens=False)
+        max_new_tokens = int(os.environ.get("PYTHIA_BME_MAX_NEW_TOKENS", "96"))
+        with torch.inference_mode():
+            generated = model.generate(
+                **encoded,
+                do_sample=False,
+                max_new_tokens=max_new_tokens,
+                pad_token_id=tokenizer.eos_token_id,
+            )
+        prompt_length = encoded["input_ids"].shape[-1]
+        continuation_ids = generated[0, prompt_length:]
+        continuation = tokenizer.decode(continuation_ids, skip_special_tokens=True)
+        return {
+            "step": step,
+            "revision": revision,
+            "commit_sha": info.sha,
+            "max_new_tokens": max_new_tokens,
+            "continuation_token_ids": continuation_ids.tolist(),
+            "continuation": continuation,
+        }
+    finally:
+        try:
+            del model
+        except UnboundLocalError:
+            pass
+        gc.collect()
+        shutil.rmtree(cache_dir, ignore_errors=True)
 
 
 def score_step(step, tokenizer):
@@ -160,6 +207,43 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(MODEL, revision="step143000")
     available = available_steps()
 
+    generation_steps = requested_generation_steps()
+    if generation_steps:
+        planned_generation = [s for s in generation_steps if s in available]
+        generation_output = Path(
+            os.environ.get(
+                "PYTHIA_BME_GENERATION_OUTPUT",
+                str(Path(__file__).with_name("runs") / "pythia-bme-generation.md"),
+            )
+        )
+        rows = [generate_step(step, tokenizer) for step in planned_generation]
+        lines = [
+            "# Pythia BME raw greedy generations",
+            "",
+            f"- model: `{MODEL}`",
+            "- decoding: raw base model, greedy, no sampling, no chat template, no system message",
+            "",
+            "## Prompt",
+            "",
+            "    " + PROMPT,
+            "",
+        ]
+        for row in rows:
+            lines += [
+                f"## step{row['step']}",
+                "",
+                f"- resolved model commit: `{row['commit_sha']}`",
+                f"- generated token count: {len(row['continuation_token_ids'])}",
+                "",
+                "```text",
+                row["continuation"],
+                "```",
+                "",
+            ]
+        generation_output.parent.mkdir(parents=True, exist_ok=True)
+        generation_output.write_text("\n".join(lines), encoding="utf-8")
+        return
+
     planned = [s for s in requested_steps() if s in available]
     rows = {}
 
@@ -188,7 +272,7 @@ def main():
             break
 
     lines = [
-        "# Pythia 410M biomedical-engineering onset sweep",
+        "# Pythia biomedical-engineering onset sweep",
         "",
         f"- model: `{MODEL}`",
         "- experiment: raw base-model checkpoint sweep; no RAG, adapter, system message, chat template, or few-shot examples",
