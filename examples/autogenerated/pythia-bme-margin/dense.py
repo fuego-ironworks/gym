@@ -5,8 +5,10 @@ add full tensor statistics and fixed-probe losses. Every checkpoint retains
 the original, held-out and unrelated pair scores plus neutral-language losses.
 """
 import argparse
-import importlib.util
 import json
+import math
+import platform
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -25,6 +27,23 @@ TOKENIZER='c66f7467608ffee8fca0d28cf1f46a7574b53cec'
 # Conservative comparison flags, not proof that an unsaved original path is recovered.
 TOLERANCES={'relative_l2':0.001,'probe_loss_abs':0.02,'pair_margin_abs':0.02}
 
+def anchor_comparison(stats,behavior,reference):
+    for record in (behavior,reference):
+        if len(record['pairs'])!=9 or len(record['neutral_mean_logp'])!=3:
+            raise ValueError('incomplete fixed-probe receipt')
+        coordinates=[(r['prompt'],r['pair']) for r in record['pairs']]
+        expected=[(p,i) for p in ('bme_original','bme_heldout','unrelated_school_question') for i in (1,2,3)]
+        if coordinates!=expected:
+            raise ValueError('fixed-probe coordinates differ')
+    neutral=[a-b for a,b in zip(behavior['neutral_mean_logp'],reference['neutral_mean_logp'])]
+    pairs=[a['margin']-b['margin'] for a,b in zip(behavior['pairs'],reference['pairs'])]
+    if not all(math.isfinite(x) for x in [stats['relative_l2'],*neutral,*pairs]):
+        raise ValueError('nonfinite anchor comparison')
+    return {'neutral_logp_deltas':neutral,'pair_margin_deltas':pairs,
+            'within_comparison_tolerances':stats['relative_l2']<=TOLERANCES['relative_l2']
+                and max(map(abs,neutral))<=TOLERANCES['probe_loss_abs']
+                and max(map(abs,pairs))<=TOLERANCES['pair_margin_abs']}
+
 def evaluate(model,tokenizer,bme):
     pairs=[]
     for name in ('bme_original','bme_heldout','unrelated_school_question'):
@@ -42,6 +61,8 @@ def main():
     parser.add_argument('--neox-dir',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
+    if args.output.exists():
+        raise ValueError('refusing to overwrite an analysis receipt')
     import torch
     from transformers import AutoModelForCausalLM,AutoTokenizer
     import bme_causal_recheck as bme
@@ -57,20 +78,20 @@ def main():
         local=AutoModelForCausalLM.from_pretrained(converted,torch_dtype=torch.float32).eval()
         behavior=evaluate(local,tokenizer,bme)
         result={'step':step,'trajectory':'reproduction, not an unreleased EleutherAI checkpoint',
+                'source_sha':subprocess.check_output(['git','-C',str(ROOT),'rev-parse','HEAD'],text=True).strip(),
+                'tracked_tree_clean':not bool(subprocess.check_output(['git','-C',str(ROOT),'status','--porcelain','--untracked-files=no'])),
+                'neox_source_sha':subprocess.check_output(['git','-C',str(args.neox_dir),'rev-parse','HEAD'],text=True).strip(),
+                'neox_diff_sha256':__import__('hashlib').sha256(subprocess.check_output(['git','-C',str(args.neox_dir),'diff','HEAD'])).hexdigest(),
                 'source_files':[r.__dict__ for r in files],'config_sha256':verify_anchor.sha256_file(args.config_file),
                 'tokenizer_sha':TOKENIZER,'behavior':behavior,'tolerances':TOLERANCES,'anchor':None,
-                'torch':torch.__version__}
+                'torch':torch.__version__,'transformers':__import__('transformers').__version__,
+                'python':platform.python_version(),'provider':'analysis CPU','paid_execution_allowed':False}
         if step in ANCHORS:
             official=AutoModelForCausalLM.from_pretrained(bme.MODEL,revision=ANCHORS[step],torch_dtype=torch.float32).eval()
             stats=verify_anchor.tensor_error_stats(local.state_dict(),official.state_dict())
             reference=evaluate(official,tokenizer,bme)
-            neutral_loss_deltas=[a-b for a,b in zip(behavior['neutral_mean_logp'],reference['neutral_mean_logp'])]
-            pair_deltas=[a['margin']-b['margin'] for a,b in zip(behavior['pairs'],reference['pairs'])]
             result['anchor']={'sha':ANCHORS[step],'tensor_error':stats,'behavior':reference,
-                'neutral_logp_deltas':neutral_loss_deltas,'pair_margin_deltas':pair_deltas,
-                'within_comparison_tolerances':stats['relative_l2']<=TOLERANCES['relative_l2']
-                    and max(map(abs,neutral_loss_deltas))<=TOLERANCES['probe_loss_abs']
-                    and max(map(abs,pair_deltas))<=TOLERANCES['pair_margin_abs']}
+                **anchor_comparison(stats,behavior,reference)}
         args.output.parent.mkdir(parents=True,exist_ok=True)
         temporary=args.output.with_suffix('.tmp')
         temporary.write_text(json.dumps(result,indent=2)+'\n')

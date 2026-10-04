@@ -1,0 +1,72 @@
+name: Pythia BME Tuned Lens trajectory
+
+on:
+  push:
+    branches:
+      - pythia-bme-tuned-lens
+    paths:
+      - .github/workflows/pythia-bme-tuned-lens.yml
+      - llm/models/inspection/bme_tuned_lens.py
+      - llm/models/inspection/bme_causal_recheck.py
+      - llm/models/run_pythia_bme_onset.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pythia-bme-tuned-lens
+  cancel-in-progress: false
+
+jobs:
+  frozen-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONPATH: ${{ github.workspace }}/vendor/tuned-lens
+    steps:
+      - name: Checkout Gym
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Checkout pinned Tuned Lens fork
+        uses: actions/checkout@v4
+        with:
+          repository: fuego-ironworks/tuned-lens
+          ref: dcb38a532c84817645a7a59933424067f1144c9a
+          path: vendor/tuned-lens
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU inference stack
+        run: |
+          python -m pip install --disable-pip-version-check torch==2.4.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check transformers==4.44.2 huggingface_hub==0.24.7
+
+      - name: Run frozen final-model Tuned Lens diagnostic
+        run: |
+          python llm/models/inspection/bme_tuned_lens.py --mode frozen-final
+
+      - name: Upload exact-run receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pythia-bme-tuned-lens-${{ github.run_id }}-${{ github.run_attempt }}
+          path: llm/models/runs/pythia-410m-bme-tuned-lens/run-${{ github.run_id }}-attempt-${{ github.run_attempt }}/
+          if-no-files-found: warn
+
+      - name: Commit complete receipt
+        if: success()
+        run: |
+          git config user.name "gym pythia probe"
+          git config user.email "gym-pythia-probe@users.noreply.github.com"
+          git add llm/models/runs/pythia-410m-bme-tuned-lens/
+          git diff --cached --quiet && exit 0
+          git commit -m "[pythia] Record BME Tuned Lens trajectory"
+          git pull --rebase origin pythia-bme-tuned-lens
+          git push origin HEAD:pythia-bme-tuned-lens

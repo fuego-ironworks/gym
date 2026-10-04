@@ -1,0 +1,9 @@
+module WeightChange
+
+weight_change_terms :
+  {matrix : Type} →
+  (compose : matrix → matrix → matrix) →
+  matrix → matrix → matrix → matrix → (matrix, matrix, matrix)
+weight_change_terms compose old_a old_b change_a change_b =
+  (compose old_b change_a, compose change_b old_a,
+   compose change_b change_a)
