@@ -1,0 +1,106 @@
+"""Signed E5M3 operand caches; multiplication and accumulation are explicit.
+
+This does not add E5M3 multiplication or replace its integer addition semantics.
+The nine-bit format is pinned in SOURCE.tsv. All model updates use Float32.
+"""
+import numpy as np
+from builtins import ValueError
+from typing import Any
+
+
+def decode_codes(codes ∈ np.ndarray) → np.ndarray:
+    codes ∈ np.ndarray ← np.asarray(codes, dtype=np.uint16)
+    if np.any(codes > 511):
+        raise ValueError("E5M3_CODE")
+    exponent ∈ np.ndarray ← (codes >> 3) & 31
+    fraction ∈ np.ndarray ← codes & 7
+    values ∈ np.ndarray ← np.where(exponent == 0, fraction * 2.0**-17,
+                      (8 + fraction) * np.exp2(np.subtract(exponent.astype(np.int32), 18)))
+    values ∈ np.ndarray ← np.where(exponent == 31, np.where(fraction == 0, np.inf, np.nan), values)
+    values ∈ np.ndarray ← np.copysign(values, np.where(codes & 256, -1.0, 1.0))
+    return values.astype(np.float32)
+
+
+def encode_values(values ∈ np.ndarray) → np.ndarray:
+    # Direct Float32 → E5M3 rounding. Going through Float16 would double-round.
+    values ∈ np.ndarray ← np.asarray(values, dtype=np.float32)
+    magnitudes ∈ np.ndarray ← np.abs(values.astype(np.float64))
+    finite ∈ np.ndarray ← decode_codes(np.arange(248, dtype=np.uint16)).astype(np.float64)
+    upper ∈ np.ndarray ← np.minimum(np.searchsorted(finite, magnitudes), 247)
+    lower ∈ np.ndarray ← np.maximum(upper - 1, 0)
+    left_distance ∈ np.ndarray ← magnitudes - finite[lower]
+    right_distance ∈ np.ndarray ← finite[upper] - magnitudes
+    choose_upper ∈ np.ndarray ← (right_distance < left_distance) | ((right_distance == left_distance) & ((upper & 1) == 0))
+    codes ∈ np.ndarray ← np.where(choose_upper, upper, lower).astype(np.uint16)
+    codes ∈ np.ndarray ← np.where(magnitudes > 61440, 247, codes).astype(np.uint16)
+    codes ∈ np.ndarray ← np.where(magnitudes >= 63488, 248, codes).astype(np.uint16)
+    codes ∈ np.ndarray ← codes | np.left_shift(np.signbit(values).astype(np.uint16), 8)
+    return np.where(np.isnan(values), 252, codes).astype(np.uint16)
+
+
+def store_codes(codes ∈ np.ndarray, layout ∈ str) → np.ndarray:
+    codes ∈ np.ndarray ← np.asarray(codes, dtype=np.uint16)
+    if np.any(codes > 511):
+        raise ValueError("E5M3_CODE")
+    if layout == "low16":
+        return codes.copy()
+    if layout == "fp16-position16":
+        return codes << 7
+    if layout == "dense9":
+        bits ∈ np.ndarray ← np.bitwise_and(np.right_shift(codes.reshape(-1, 1), np.arange(9)), 1).astype(np.uint8)
+        return np.packbits(bits.reshape(-1), bitorder="little")
+    raise ValueError("LAYOUT")
+
+
+def load_codes(data ∈ np.ndarray, shape ∈ object, layout ∈ str) → np.ndarray:
+    if layout == "low16":
+        codes ∈ np.ndarray ← np.asarray(data, dtype=np.uint16).reshape(shape)
+        if np.any(codes > 511):
+            raise ValueError("E5M3_CODE")
+        return codes
+    if layout == "fp16-position16":
+        data ∈ np.ndarray ← np.asarray(data, dtype=np.uint16).reshape(shape)
+        if np.any(data & 127):
+            raise ValueError("FP16_POSITION_PADDING")
+        return data >> 7
+    if layout == "dense9":
+        count ∈ int ← int(np.prod(shape))
+        data ∈ np.ndarray ← np.asarray(data, dtype=np.uint8)
+        if data.size != (count * 9 + 7) // 8:
+            raise ValueError("DENSE9_SIZE")
+        bits ∈ np.ndarray ← np.unpackbits(data, bitorder="little")
+        if np.any(bits[count * 9:]):
+            raise ValueError("DENSE9_PADDING")
+        return np.matmul(bits[:count * 9].reshape(count, 9).astype(np.uint16), np.left_shift(1, np.arange(9, dtype=np.uint16))).reshape(shape)
+    raise ValueError("LAYOUT")
+
+
+def cache_operands(values ∈ np.ndarray, layout ∈ str) → dict[str, Any]:
+    return {"shape": values.shape, "layout": layout,
+            "data": store_codes(encode_values(values), layout)}
+
+
+def expand_operands(cache ∈ dict[str, Any]) → np.ndarray:
+    if cache["layout"] == "fp16-position16":
+        # The same signed nine meaningful bits already occupy binary16 positions.
+        return cache["data"].view(np.float16).astype(np.float32)
+    return decode_codes(load_codes(cache["data"], cache["shape"], cache["layout"]))
+
+
+def matrix_product(left ∈ np.ndarray, right ∈ np.ndarray, multiplication ∈ str, accumulation ∈ str) → np.ndarray:
+    if multiplication == "float32" and accumulation == "float32":
+        return np.matmul(np.asarray(left, dtype=np.float32), np.asarray(right, dtype=np.float32))
+    if (multiplication != "float16" and multiplication != "float32") or (accumulation != "float16" and accumulation != "float32"):
+        raise ValueError("PRECISION")
+    product_type ∈ object ← np.float16 if multiplication == "float16" else np.float32
+    accumulator_type ∈ object ← np.float16 if accumulation == "float16" else np.float32
+    result ∈ np.ndarray ← np.zeros((left.shape[0], right.shape[1]), dtype=accumulator_type)
+    # Bounded temporary storage and explicit product rounding. No claim about a
+    # vendor BLAS implementation's undocumented half-precision accumulator.
+    for start in range(0, left.shape[1], 16):
+        products ∈ np.ndarray ← np.multiply(left[:, start:start + 16, None].astype(product_type),
+                               right[None, start:start + 16, :].astype(product_type),
+                               dtype=product_type)
+        partial ∈ np.ndarray ← products.sum(axis=1, dtype=accumulator_type)
+        result ∈ np.ndarray ← np.add(result, partial, dtype=accumulator_type)
+    return result.astype(np.float32)
