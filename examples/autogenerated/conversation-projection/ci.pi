@@ -1,0 +1,16 @@
+"""GitHub's custom-shell argument is JSON configuration, never shell source."""
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+from builtins import ValueError
+
+configuration ∈ dict[str, Any] ← json.loads(Path(sys.argv[1]).read_text())
+output ∈ str ← configuration["output"]
+entrypoint ∈ str ← str(Path(os.environ["ITHON_ENTRYPOINT"]).resolve())
+subprocess.run([sys.executable, "-m", "pip", "install", "numpy==2.3.5"], check=True, timeout=300)
+subprocess.run([entrypoint, str(Path(__file__).with_name("test_projection.pi"))], check=True, timeout=60)
+from train import smoke
+smoke(output)
