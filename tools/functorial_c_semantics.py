@@ -2,13 +2,13 @@
 """Execute the Horner edit under ICK in a networkless resource-limited container."""
 from __future__ import annotations
 import argparse
-import difflib
 import hashlib
 import json
 import os
 import re
 import subprocess
 import tempfile
+import uuid
 from pathlib import Path
 import functorial_c_eval as base
 
@@ -123,6 +123,7 @@ def evaluate(candidate, reference, compiler, image):
     if re.search(r'output_cartesian\s*\[\s*static', candidate):
         return {'status': 'FAIL_CONTRACT', 'semantic_correctness': False}
     stage = compiler.resolve().parent.parent
+    container_name = 'gym-ick-edit-' + uuid.uuid4().hex
     with tempfile.TemporaryDirectory(prefix='gym-ick-edit-') as name:
         work = Path(name)
         (work/'candidate.c').write_text(candidate)
@@ -132,8 +133,9 @@ def evaluate(candidate, reference, compiler, image):
                   '-Dfourier_polynomial_cartesian_ick=historical_polynomial -c reference.c -o reference.o; '
                   '"$1" -fno-link-libatomic -std=c17 -O2 -Wall -Wextra -Werror '
                   'candidate.c driver.c reference.o -lm -o check; ./check')
-        command = ['docker','run','--rm','--network=none','--read-only','--cap-drop=ALL',
-                   '--security-opt=no-new-privileges','--memory=1g','--cpus=2','--pids-limit=64',
+        command = ['docker','run','--rm','--name',container_name,'--network=none',
+                   '--read-only','--cap-drop=ALL','--security-opt=no-new-privileges',
+                   '--memory=1g','--cpus=2','--pids-limit=64','--ulimit','core=0',
                    '--user',f'{os.getuid()}:{os.getgid()}',
                    '--tmpfs','/tmp:rw,exec,nosuid,nodev,size=128m',
                    '--mount',f'type=bind,src={stage},dst={stage},readonly',
@@ -141,12 +143,23 @@ def evaluate(candidate, reference, compiler, image):
                    image,'/bin/sh','-c',script,'check',str(compiler.resolve())]
         try:
             run = subprocess.run(command, capture_output=True, text=True, timeout=60)
-            return {'status':'PASS' if run.returncode == 0 else 'FAIL_EXECUTION',
-                    'semantic_correctness':run.returncode == 0,
+            unavailable = run.returncode in (125,126,127)
+            return {'status':'BLOCKED' if unavailable else
+                            'PASS' if run.returncode == 0 else 'FAIL_EXECUTION',
+                    'semantic_correctness':None if unavailable else run.returncode == 0,
                     'exit_code':run.returncode,'stdout':run.stdout[-6000:],
                     'stderr':run.stderr[-6000:]}
         except (OSError,subprocess.TimeoutExpired) as exc:
             return {'status':'BLOCKED','semantic_correctness':None,'error':repr(exc)}
+        finally:
+            # Killing only the Docker client need not stop its server-side container.
+            # Remove the named container before deleting the writable work directory.
+            try:
+                subprocess.run(['docker','rm','--force',container_name],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                               timeout=10, check=False)
+            except (OSError,subprocess.TimeoutExpired):
+                pass
 
 
 def main():
@@ -169,7 +182,8 @@ def main():
         positive=evaluate(good,source,args.compiler,args.image)
         negative=evaluate(changed,source,args.compiler,args.image)
         results.append({'kind':'control','phase':phase,'positive':positive,'negative':negative})
-        if positive['status']!='PASS' or negative['status']!='FAIL_EXECUTION':
+        if (positive['status']!='PASS' or negative['status']!='FAIL_EXECUTION'
+                or negative.get('exit_code') != 134):
             args.output.write_text(json.dumps({'status':'UNQUALIFIED_SCORER','results':results},indent=2)+'\n')
             return 2
     for receipt in args.receipts:
