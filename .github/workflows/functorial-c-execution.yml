@@ -1,0 +1,82 @@
+name: Functorial C executable edit qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_run_id:
+        description: Historical-code pilot run containing model receipts
+        default: '37960256328'
+        required: true
+  push:
+    branches: [experiment/gpt-oss-functorial-c-pairs]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  executable-checks:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[verify-ick-edits]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Test evaluator machinery
+        run: python3 -m unittest discover -s tests
+      - name: Build and qualify exact ICK compiler
+        id: ick
+        uses: isomorphisms/ai-ci/ick-host@903b2cb27ea572c9c6cb2ffa9f39e0fbf06ec9f8
+      - name: Build isolated native runtime and retain its resolved identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qualification-results
+          docker build --iidfile qualification-results/image-id.txt -f cases/functorial_c/Containerfile .
+          image="$(cat qualification-results/image-id.txt)"
+          echo "CHECK_IMAGE=$image" >> "$GITHUB_ENV"
+          docker image inspect "$image" > qualification-results/image-inspect.json
+          docker run --rm --network none "$image" dpkg-query -W > qualification-results/runtime-packages.tsv
+          git -C .ick-host-source rev-parse HEAD > qualification-results/ick-source.txt
+      - name: Positive and deliberately broken edit controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/functorial_c_semantics.py \
+            --compiler '${{ steps.ick.outputs.compiler }}' --image "$CHECK_IMAGE" \
+            --output qualification-results/controls.json
+          python3 - <<'PY'
+          import json
+          result = json.load(open('qualification-results/controls.json'))
+          assert result['status'] == 'SCORER_QUALIFIED'
+          for row in result['results']:
+              assert row['positive']['status'] == 'PASS'
+              # A compiler error is not an executed negative control.
+              assert row['negative']['exit_code'] == 134, row
+          PY
+      - name: Retrieve the actual model answers without running their contents
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.model_run_id || '37960256328' }}
+          pattern: gpt-oss-fourier-horner-*
+          path: .model-run
+          merge-multiple: true
+      - name: Execute exact model patches against pinned source, inside the sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .model-run/pilot-results/fourier-horner/responses.jsonl
+          python3 tools/functorial_c_semantics.py \
+            --compiler '${{ steps.ick.outputs.compiler }}' --image "$CHECK_IMAGE" \
+            --receipts .model-run/pilot-results/fourier-horner/responses.jsonl \
+            --output qualification-results/model-edits.json
+      - name: Retain controls, compiler identity and model-edit outcomes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: functorial-c-executable-checks-${{ github.sha }}
+          path: qualification-results/
+          if-no-files-found: warn
+          retention-days: 30
