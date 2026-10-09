@@ -1,0 +1,25 @@
+name: GPT-OSS historical source preflight
+
+on:
+  push:
+    paths:
+      - 'cases/functorial_c/**'
+      - 'tools/functorial_c_eval.py'
+      - '.github/workflows/functorial-c-source.yml'
+  pull_request:
+    paths:
+      - 'cases/functorial_c/**'
+      - 'tools/functorial_c_eval.py'
+      - '.github/workflows/functorial-c-source.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-source-blobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Gym
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Verify real historical C source blobs
+        run: python3 tools/functorial_c_eval.py --dry-run
