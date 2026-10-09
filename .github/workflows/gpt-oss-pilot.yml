@@ -1,0 +1,102 @@
+name: GPT-OSS real historical-code pilot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [experiment/gpt-oss-functorial-c-pairs]
+
+permissions:
+  contents: read
+
+jobs:
+  inference:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-gpt-oss]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        pair: [fourier-horner, seifert-ribbons]
+    env:
+      OLLAMA_HOST: 127.0.0.1:11434
+      OLLAMA_NUM_PARALLEL: '1'
+      OLLAMA_MAX_LOADED_MODELS: '1'
+      OLLAMA_CONTEXT_LENGTH: '16384'
+      OLLAMA_KEEP_ALIVE: 45m
+      OLLAMA_MODELS: ${{ runner.temp }}/gpt-oss-models
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify harness before inference
+        run: python3 -m unittest discover -s tests
+      - name: Prepare ephemeral CPU runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p pilot-logs
+          { uname -a; lscpu; free -b; df -B1 .; } > pilot-logs/machine.txt
+          # These are runner-image SDKs, not repository or user files.
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          test "$(df --output=avail -B1 . | tail -1)" -gt 20000000000
+          sudo apt-get update -qq
+          sudo apt-get install -y zstd
+      - name: Install checksum-pinned Ollama 0.40.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/ollama-linux-amd64.tar.zst"
+          curl --fail --location --retry 3 --max-time 300 \
+            https://github.com/ollama/ollama/releases/download/v0.40.2/ollama-linux-amd64.tar.zst \
+            --output "$archive"
+          printf '726bee78706c281b0eeef00746efe51a044d71c592c3f0b195820707f31fdf04  %s\n' "$archive" | sha256sum --check
+          mkdir -p "$RUNNER_TEMP/ollama"
+          tar --zstd -xf "$archive" -C "$RUNNER_TEMP/ollama"
+          rm "$archive"
+          echo "$RUNNER_TEMP/ollama/bin" >> "$GITHUB_PATH"
+      - name: Start local model server and fetch real GPT-OSS weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          ollama serve > pilot-logs/ollama.log 2>&1 &
+          echo "$!" > pilot-logs/server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:11434/api/version > pilot-logs/runtime.json; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:11434/api/version
+          timeout 600 ollama pull gpt-oss:20b > pilot-logs/model-pull.log 2>&1
+          curl --fail --silent http://127.0.0.1:11434/api/tags > pilot-logs/model-tags.json
+          python3 - <<'PY'
+          import json, os
+          models = json.load(open('pilot-logs/model-tags.json'))['models']
+          selected = next(m for m in models if m['name'] == 'gpt-oss:20b')
+          assert selected['digest']
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('GPT_OSS_DIGEST=' + selected['digest'] + '\n')
+          print('Actual model identity:', json.dumps(selected))
+          PY
+      - name: Ask all paired questions and edit requests, three trials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -u tools/functorial_c_pilot.py \
+            --pair '${{ matrix.pair }}' --trials 3 \
+            --expected-digest "$GPT_OSS_DIGEST" \
+            --output 'pilot-results/${{ matrix.pair }}' | tee pilot-logs/experiment.log
+      - name: Preserve successful, failed and incomplete evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gpt-oss-${{ matrix.pair }}-${{ github.sha }}
+          path: |
+            pilot-results/
+            pilot-logs/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Stop the ephemeral server
+        if: always()
+        shell: bash
+        run: |
+          if test -f pilot-logs/server.pid; then kill "$(cat pilot-logs/server.pid)" || true; fi
