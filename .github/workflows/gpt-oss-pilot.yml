@@ -24,7 +24,6 @@ jobs:
       OLLAMA_MAX_LOADED_MODELS: '1'
       OLLAMA_CONTEXT_LENGTH: '16384'
       OLLAMA_KEEP_ALIVE: 45m
-      OLLAMA_MODELS: ${{ runner.temp }}/gpt-oss-models
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -36,6 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p pilot-logs
+          echo "OLLAMA_MODELS=$RUNNER_TEMP/gpt-oss-models" >> "$GITHUB_ENV"
           { uname -a; lscpu; free -b; df -B1 .; } > pilot-logs/machine.txt
           # These are runner-image SDKs, not repository or user files.
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc
