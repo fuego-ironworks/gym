@@ -1,0 +1,5 @@
+FROM ubuntu:24.04
+# GCC supplies the matching Ubuntu native headers/link runtime. The experiment
+# invokes only the explicitly mounted, source-pinned ICK compiler for C input.
+RUN apt-get update && apt-get install -y --no-install-recommends gcc-13 libc6-dev binutils libgmp10 libmpfr6 libmpc3 && rm -rf /var/lib/apt/lists/*
+WORKDIR /work
