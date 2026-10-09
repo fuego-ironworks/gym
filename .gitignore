@@ -1,0 +1,4 @@
+# Local source cache, model-run receipts and heavyweight model weights
+.cache/
+runs/
+models/weights/
