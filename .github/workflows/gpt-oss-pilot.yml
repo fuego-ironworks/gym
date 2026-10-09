@@ -2,6 +2,12 @@ name: GPT-OSS real historical-code pilot
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Frozen v2 pilot or v3 bounded edit repair
+        type: choice
+        options: [bounded-repair-v3, pilot-v2]
+        default: bounded-repair-v3
   push:
     branches: [experiment/gpt-oss-functorial-c-pairs]
 
@@ -10,15 +16,16 @@ permissions:
 
 jobs:
   inference:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-gpt-oss]')
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[run-gpt-oss]') || contains(github.event.head_commit.message, '[run-gpt-oss-repair]')
     runs-on: ubuntu-24.04
-    timeout-minutes: 50
+    timeout-minutes: ${{ (inputs.mode == 'bounded-repair-v3' || contains(github.event.head_commit.message, '[run-gpt-oss-repair]')) && 75 || 50 }}
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        pair: [fourier-horner, seifert-ribbons]
+        pair: ${{ fromJSON((inputs.mode == 'bounded-repair-v3' || contains(github.event.head_commit.message, '[run-gpt-oss-repair]')) && '["fourier-horner"]' || '["fourier-horner","seifert-ribbons"]') }}
     env:
+      PILOT_MODE: ${{ (inputs.mode == 'bounded-repair-v3' || contains(github.event.head_commit.message, '[run-gpt-oss-repair]')) && 'bounded-repair-v3' || 'pilot-v2' }}
       OLLAMA_HOST: 127.0.0.1:11434
       OLLAMA_NUM_PARALLEL: '1'
       OLLAMA_MAX_LOADED_MODELS: '1'
@@ -77,19 +84,20 @@ jobs:
               output.write('GPT_OSS_DIGEST=' + selected['digest'] + '\n')
           print('Actual model identity:', json.dumps(selected))
           PY
-      - name: Ask all paired questions and edit requests, three trials
+      - name: Run the selected paired experiment, three trials
         shell: bash
         run: |
           set -euo pipefail
           python3 -u tools/functorial_c_pilot.py \
             --pair '${{ matrix.pair }}' --trials 3 \
+            --mode "$PILOT_MODE" \
             --expected-digest "$GPT_OSS_DIGEST" \
             --output 'pilot-results/${{ matrix.pair }}' | tee pilot-logs/experiment.log
       - name: Preserve successful, failed and incomplete evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: gpt-oss-${{ matrix.pair }}-${{ github.sha }}
+          name: ${{ env.PILOT_MODE == 'bounded-repair-v3' && 'gpt-oss-repair-v3' || 'gpt-oss' }}-${{ matrix.pair }}-${{ github.sha }}
           path: |
             pilot-results/
             pilot-logs/
@@ -99,4 +107,38 @@ jobs:
         if: always()
         shell: bash
         run: |
+          ollama stop gpt-oss:20b || true
           if test -f pilot-logs/server.pid; then kill "$(cat pilot-logs/server.pid)" || true; fi
+      - name: Build source-pinned ICK after releasing model memory
+        if: success() && env.PILOT_MODE == 'bounded-repair-v3'
+        id: ick
+        uses: isomorphisms/ai-ci/ick-host@903b2cb27ea572c9c6cb2ffa9f39e0fbf06ec9f8
+      - name: Build isolated runtime and retain its resolved identity
+        if: success() && env.PILOT_MODE == 'bounded-repair-v3'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qualification-results
+          docker build --iidfile qualification-results/image-id.txt -f cases/functorial_c/Containerfile .
+          image="$(cat qualification-results/image-id.txt)"
+          echo "CHECK_IMAGE=$image" >> "$GITHUB_ENV"
+          docker image inspect "$image" > qualification-results/image-inspect.json
+          docker run --rm --network none "$image" dpkg-query -W > qualification-results/runtime-packages.tsv
+          git -C .ick-host-source rev-parse HEAD > qualification-results/ick-source.txt
+      - name: Qualify controls and execute first and repaired model candidates
+        if: success() && env.PILOT_MODE == 'bounded-repair-v3'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/functorial_c_semantics.py \
+            --compiler '${{ steps.ick.outputs.compiler }}' --image "$CHECK_IMAGE" \
+            --receipts pilot-results/fourier-horner/responses.jsonl \
+            --output qualification-results/model-edits.json
+      - name: Preserve v3 controls, compiler identity and both edit outcomes
+        if: always() && env.PILOT_MODE == 'bounded-repair-v3'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gpt-oss-repair-v3-executable-${{ github.sha }}
+          path: qualification-results/
+          if-no-files-found: warn
+          retention-days: 30

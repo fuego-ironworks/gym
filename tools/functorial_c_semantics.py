@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 import tempfile
+import time
 import uuid
 from pathlib import Path
 import functorial_c_eval as base
@@ -121,7 +122,8 @@ def positive_control(source):
 
 def evaluate(candidate, reference, compiler, image):
     if re.search(r'output_cartesian\s*\[\s*static', candidate):
-        return {'status': 'FAIL_CONTRACT', 'semantic_correctness': False}
+        return {'status': 'FAIL_CONTRACT', 'stage': 'source_contract',
+                'semantic_correctness': None, 'contract_satisfied': False}
     stage = compiler.resolve().parent.parent
     container_name = 'gym-ick-edit-' + uuid.uuid4().hex
     with tempfile.TemporaryDirectory(prefix='gym-ick-edit-') as name:
@@ -132,7 +134,7 @@ def evaluate(candidate, reference, compiler, image):
         script = ('set -eu; "$1" -fno-link-libatomic -std=c17 -O2 -Wall -Wextra -Werror '
                   '-Dfourier_polynomial_cartesian_ick=historical_polynomial -c reference.c -o reference.o; '
                   '"$1" -fno-link-libatomic -std=c17 -O2 -Wall -Wextra -Werror '
-                  'candidate.c driver.c reference.o -lm -o check; ./check')
+                  'candidate.c driver.c reference.o -lm -o check')
         command = ['docker','run','--rm','--name',container_name,'--network=none',
                    '--read-only','--cap-drop=ALL','--security-opt=no-new-privileges',
                    '--memory=1g','--cpus=2','--pids-limit=64','--ulimit','core=0',
@@ -140,17 +142,34 @@ def evaluate(candidate, reference, compiler, image):
                    '--tmpfs','/tmp:rw,exec,nosuid,nodev,size=128m',
                    '--mount',f'type=bind,src={stage},dst={stage},readonly',
                    '--mount',f'type=bind,src={work},dst=/work','--workdir=/work',
-                   image,'/bin/sh','-c',script,'check',str(compiler.resolve())]
+                   image]
+        stages = []
+        started = time.monotonic()
+        stage = 'compile'
         try:
-            run = subprocess.run(command, capture_output=True, text=True, timeout=60)
-            unavailable = run.returncode in (125,126,127)
-            return {'status':'BLOCKED' if unavailable else
-                            'PASS' if run.returncode == 0 else 'FAIL_EXECUTION',
-                    'semantic_correctness':None if unavailable else run.returncode == 0,
-                    'exit_code':run.returncode,'stdout':run.stdout[-6000:],
-                    'stderr':run.stderr[-6000:]}
+            for stage, arguments in (
+                    ('compile',['/bin/sh','-c',script,'check',str(compiler.resolve())]),
+                    ('execute',['./check'])):
+                remaining = 60 - (time.monotonic() - started)
+                if remaining <= 0:
+                    raise subprocess.TimeoutExpired(command,60)
+                run = subprocess.run(command+arguments, capture_output=True, text=True, timeout=remaining)
+                stages.append({'stage':stage, 'exit_code':run.returncode,
+                               'stdout':run.stdout[-6000:], 'stderr':run.stderr[-6000:]})
+                if run.returncode == 0 and stage == 'compile':
+                    continue
+                unavailable = run.returncode in (125,126,127)
+                return {'status':'BLOCKED' if unavailable else
+                                'FAIL_COMPILE' if stage == 'compile' else
+                                'PASS' if run.returncode == 0 else 'FAIL_EXECUTION',
+                        'semantic_correctness':None if unavailable or stage == 'compile'
+                                               else run.returncode == 0,
+                        'stage':stage, 'stages':stages,
+                        'exit_code':run.returncode,'stdout':run.stdout[-6000:],
+                        'stderr':run.stderr[-6000:]}
         except (OSError,subprocess.TimeoutExpired) as exc:
-            return {'status':'BLOCKED','semantic_correctness':None,'error':repr(exc)}
+            return {'status':'BLOCKED','semantic_correctness':None,'error':repr(exc),
+                    'stage':stage,'stages':stages}
         finally:
             # Killing only the Docker client need not stop its server-side container.
             # Remove the named container before deleting the writable work directory.
@@ -187,16 +206,27 @@ def main():
             args.output.write_text(json.dumps({'status':'UNQUALIFIED_SCORER','results':results},indent=2)+'\n')
             return 2
     for receipt in args.receipts:
-        for line in receipt.read_text().splitlines():
-            row=json.loads(line)
+        lines=receipt.read_text().splitlines()
+        receipt_rows=[json.loads(line) for line in lines]
+        if any(row.get('protocol')=='historical-c-bounded-repair-v3' for row in receipt_rows):
+            from functorial_c_pilot import audit_repair_rows
+            audit_repair_rows(receipt_rows,pair,{phase:{'code.c':source}
+                              for phase,source in sources.items()})
+        for line,row in zip(lines,receipt_rows):
             if row.get('kind')!='edit':
                 continue
-            if row['pair']!='fourier-horner' or row.get('protocol')!='historical-c-pilot-v2':
+            if row['pair']!='fourier-horner' or row.get('protocol') not in (
+                    'historical-c-pilot-v2','historical-c-bounded-repair-v3'):
                 raise ValueError('Unsupported edit receipt protocol')
             phase=row['phase']
             if row['commit']!=pair[phase]['commit']:
                 raise ValueError('Receipt source commit mismatch')
             item={k:row[k] for k in ('pair','phase','task_id','trial','commit')}
+            item['protocol']=row['protocol']
+            if row['protocol']=='historical-c-bounded-repair-v3':
+                item['attempt']=row['attempt']
+                item['model_response_sha256']=row.get('response_sha256')
+                item['parent_response_sha256']=row.get('parent_response_sha256')
             item['response_sha256']=hashlib.sha256(line.encode()).hexdigest()
             if row['status']!='completed':
                 item['result']={'status':'NOT_COMPLETED','semantic_correctness':None}
@@ -205,7 +235,7 @@ def main():
                     candidate=apply_patch(sources[phase],row['response']['message']['content'])
                     item['result']=evaluate(candidate,sources[phase],args.compiler,args.image)
                 except ValueError as exc:
-                    item['result']={'status':'FAIL_PATCH','semantic_correctness':False,'error':str(exc)}
+                    item['result']={'status':'FAIL_PATCH','semantic_correctness':None,'error':str(exc)}
             results.append(item)
     output={'status':'SCORER_QUALIFIED','compiler_sha256':hashlib.sha256(args.compiler.read_bytes()).hexdigest(),
             'image':args.image,'driver_sha256':hashlib.sha256(DRIVER.encode()).hexdigest(),'results':results}
