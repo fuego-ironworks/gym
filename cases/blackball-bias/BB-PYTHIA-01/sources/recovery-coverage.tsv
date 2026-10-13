@@ -1,0 +1,9 @@
+from_inclusive	to_inclusive	recovery_status	searched_or_recovered	original_status	limits
+2024-10-08	2025-01-07	none_recovered	broad and old-window searches; R09 refresh	No original transcripts recovered	UNKNOWN; no absence inference
+2025-01-08	2025-04-07	none_recovered	broad and old-window searches; R09 refresh	No original transcripts recovered	UNKNOWN; no absence inference
+2025-04-08	2025-07-07	secondary_leads	prior April19/May31 leads; June political framing; R09 June1	Summaries only; no complete original locator	Partial topical recovery; nonexhaustive
+2025-07-08	2025-10-07	secondary_leads	political framing July-August; R09 September9 and August access claims	Dated summaries/snippets; missing complete exchanges	Partial topical recovery; nonexhaustive
+2025-10-08	2026-01-07	reconstruction_and_secondary_leads	S02 BME; R09 December31 political summary	Reconstruction and summaries; original BME turns incomplete	Not an original-dialogue replay
+2026-01-08	2026-04-07	none_distinct_recovered	broad topic searches	No separately verified original for this interval	UNKNOWN; coverage not exhaustive
+2026-04-08	2026-07-07	secondary_leads	R09 May19 retrospective and July4-5 evidence-handling	Summaries and selected phrases without stable original locators	Retrospective statements do not replace earlier incident
+2026-07-08	2026-10-08	public_records_and_secondary_leads	S01 September24; S09 July22; earlier July17 narrative lead	Public observation/reexamination plus summaries; originals missing	2026-09-07 audit was a separate historical snapshot

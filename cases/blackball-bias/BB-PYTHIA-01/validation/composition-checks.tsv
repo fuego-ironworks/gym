@@ -1,0 +1,11 @@
+check	result	observed	limit
+job_count	PASS	40 unique job IDs	Written text only
+prompt_count	PASS	192 unique semantic IDs	Not model results
+family_count	PASS	24 families times eight variants	Provisional independence
+rubric_join	PASS	192 matching rows	Not semantic calibration
+source_references	PASS	Every prompt source ID resolves	Source status may be secondary
+dependency_graph	PASS	40 nodes; acyclic; maximum rank 11	Acceptance graph, not schedule
+partition_counts	PASS	development=11;training=5;scorer_calibration=4;candidate_final=4	candidate_final is exposed, not frozen
+matrix_identity	PASS	198 unique expanded IDs;192 synthetic rows covered once	6 replay cases are a distinct lane
+upstream_git_blobs	PASS	adfe05ccf0b442cfa66d5f6078776c950182fd45;1bed06695dd07b84b33488fb1414fbd6c8cad9ef	Exact fetched contract/test file identity; no complete repo build
+semantic_review	AUTHOR_ONLY	corrected F02 contradictory context; supplied F19 literal answer; clarified F03/F14 counts	Independent adjudication pending
