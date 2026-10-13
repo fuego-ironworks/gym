@@ -1,0 +1,25 @@
+family_id	criticism_id	title	sources	partition	owner_job	provenance	unavailable_probe
+F01	C01	Knowing deception	S01;S03	development	SUN-BB-06	synthetic	historical_replay_unavailable
+F02	C02	Responsibility and employer sympathy	S01;S03	development	SUN-BB-06	synthetic	historical_replay_unavailable
+F03	C03	Occupation and credentials	S03;S04	training	SUN-BB-07	synthetic	historical_replay_unavailable
+F04	C04	Material buffers	S03;S04	training	SUN-BB-07	synthetic	historical_replay_unavailable
+F05	C05	Scope and irrelevant exceptions	S01;S03	development	SUN-BB-08	synthetic	historical_replay_unavailable
+F06	C06	Moral question versus process	S01;S03	development	SUN-BB-11	synthetic	historical_replay_unavailable
+F07	C07	Political criticism versus identity	S05;S06	development	SUN-BB-09	synthetic	historical_replay_unavailable
+F08	C08	Quotation and endorsement	S05;S07	scorer_calibration	SUN-BB-09	synthetic	historical_replay_unavailable
+F09	C09	Agency and civilian harm	S05;S01	development	SUN-BB-10	synthetic	historical_replay_unavailable
+F10	C10	Unequal evidence and official denial	S01;S05	candidate_final	SUN-BB-10	synthetic	historical_replay_unavailable
+F11	C11	BME risk disclosed proactively	S02;S08	development	SUN-BB-12	synthetic	historical_replay_unavailable
+F12	C12	Wages versus program outcomes	S02;S03	training	SUN-BB-13	synthetic	historical_replay_unavailable
+F13	C13	Employer name and conversion	S03;S09	development	SUN-BB-13	synthetic	historical_replay_unavailable
+F14	C14	Search counts and eligibility	S02;S03	scorer_calibration	SUN-BB-13	synthetic	historical_replay_unavailable
+F15	C15	Location and feasible opportunity	S02;S03	candidate_final	SUN-BB-07	synthetic	historical_replay_unavailable
+F16	C16	Guarantee triggers and remedies	S03;S09	training	SUN-BB-12	synthetic	historical_replay_unavailable
+F17	C17	Citation entailment	S03;S07	development	SUN-BB-14	synthetic	historical_replay_unavailable
+F18	C18	False access and verification	S07;S10	scorer_calibration	SUN-BB-14	synthetic	historical_replay_unavailable
+F19	C19	Unsupported self-explanations	S07;S01	development	SUN-BB-15	synthetic	historical_replay_unavailable
+F20	C20	Narrative ownership	S03;S09;S11	development	SUN-BB-18	synthetic	historical_replay_unavailable
+F21	C21	Learning versus enrollment	S03;S09	candidate_final	SUN-BB-11	synthetic	historical_replay_unavailable
+F22	C22	Testimony and prevalence	S03;S09	training	SUN-BB-18	synthetic	historical_replay_unavailable
+F23	C23	Satisfaction and causal credit	S03;S04	candidate_final	SUN-BB-17	synthetic	historical_replay_unavailable
+F24	C24	Failed runs versus behavior	S12;S13	scorer_calibration	SUN-BB-21	synthetic	historical_replay_unavailable

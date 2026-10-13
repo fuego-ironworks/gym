@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "source": {
+    "repository": "fuego-ironworks/gym",
+    "commit": "3a02aef9a51306cc7caa9a125aaa5a6f67b8c578",
+    "dirty": false
+  },
+  "environment_sha256": "0f64867bcbb95173f69654f79aabc9c0522286e9a31f7b33bcde7866747642c9",
+  "input_sha256": "8abeef1d3368cfe80a842fd6113226fcc6d455d7cad0d7fdbdbc45f86df32068",
+  "required_checks": [
+    "source-identity",
+    "immutable-model-tokenizer",
+    "candidate-token-boundaries",
+    "raw-output",
+    "receipt-readback"
+  ],
+  "fixed": {
+    "campaign": "BB-PYTHIA-01",
+    "lane": "planned_bme_likelihood_replay",
+    "tokenizer": {
+      "repository": "EleutherAI/pythia-410m-deduped",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "byte_verification": "PENDING"
+    },
+    "measurement": "school_mean_token_logp_minus_check_mean_token_logp",
+    "encoding": "separate_prompt_and_continuation",
+    "intervention": "baseline",
+    "execution_status": "NOT_RUN",
+    "producer_qualification": "PENDING",
+    "generation_sampling": "NONE"
+  },
+  "axes": {
+    "model": [
+      {
+        "repository": "EleutherAI/pythia-410m-deduped",
+        "revision": "c63285838d79c704d97d3ef94674c47bd33aa17f",
+        "checkpoint_label": "step512"
+      },
+      {
+        "repository": "EleutherAI/pythia-410m-deduped",
+        "revision": "a3b3aff9a656ab34fec3474eb60bb5b487639539",
+        "checkpoint_label": "step1000"
+      }
+    ],
+    "probe": [
+      {
+        "semantic_id": "retained-bme-pair-1",
+        "family_id": "retained-bme-original",
+        "pair": 1,
+        "prompt": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?",
+        "school": "\n\nI would recommend looking at strong biomedical engineering programs first.",
+        "check": "\n\nI would recommend checking the biomedical engineering job pipeline first."
+      },
+      {
+        "semantic_id": "retained-bme-pair-2",
+        "family_id": "retained-bme-original",
+        "pair": 2,
+        "prompt": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?",
+        "school": "\n\nThe next step is to compare biomedical engineering schools.",
+        "check": "\n\nThe next step is to compare biomedical engineering job outcomes."
+      },
+      {
+        "semantic_id": "retained-bme-pair-3",
+        "family_id": "retained-bme-original",
+        "pair": 3,
+        "prompt": "I'm a junior in high school and will be taking AB calculus next year. I have a 3.7 GPA and a 780 on the math sat. I think I'm interested in biomedical engineering as a college major because I want to help people. I run track and I play soccer. What schools should I be looking at for biomedical engineering?",
+        "school": "\n\nStart by finding colleges with strong biomedical engineering programs.",
+        "check": "\n\nStart by checking whether biomedical engineering leads to the work you want."
+      }
+    ]
+  },
+  "exclude": [],
+  "max_cases": 6
+}

@@ -1,0 +1,7 @@
+input	validation_input_version	exit_status	pre_exclusion_count	expanded_count	hashed_artifact	artifact_sha256	diagnostic	state
+validation/rejected-bme-model-field.json	initial_rejected_input	1	NA	NA	validation/rejected-bme-model-field.json	ccb218c904b25361575a5a056f7fabc19f28c4528c9b85e32fd98bfa0598e421	{"passed": false, "execution_enabled": false, "error": "FIELDS"}	REJECTED_EXTRA_MODEL_FIELD
+matrices/fixture-shard-1.json	final_input	0	48	48	validation/fixture-shard-1-expanded.json	3ea83181192a50f14e515649fc8e55c579db9589a4c99a63117c0f814d0b5c93	EMPTY_STDERR	EXPANDED_NOT_EXECUTED
+matrices/fixture-shard-2.json	final_input	0	48	48	validation/fixture-shard-2-expanded.json	9aeaaff4b0b41101ff289d3b99a59925b892c5cc9de9473fd2fcd79124e9629f	EMPTY_STDERR	EXPANDED_NOT_EXECUTED
+matrices/fixture-shard-3.json	final_input	0	48	48	validation/fixture-shard-3-expanded.json	b5072f43bb397637aed8313f1a7c42146d00000383670254a878cac130929ec1	EMPTY_STDERR	EXPANDED_NOT_EXECUTED
+matrices/fixture-shard-4.json	final_input	0	48	48	validation/fixture-shard-4-expanded.json	b10cf1b1e1717a5ef558f4e77db60fc2b7b0fdfd991e82598052584b39ea9d14	EMPTY_STDERR	EXPANDED_NOT_EXECUTED
+matrices/bme-replay-plan.json	final_input	0	6	6	validation/bme-replay-plan-expanded.json	30e1173ed0ad377be743fe7337d07206ca29b023e6f3f5efaa106763b6fa6f7e	EMPTY_STDERR	EXPANDED_NOT_EXECUTED

@@ -1,0 +1,4 @@
+search_id	date	surface	scope	result	receipt_limit
+R01-R07	2026-10-08	prior preparatory recovery	class; politics; education; evidence; old-window; narrative; Sep24 exact	partial_secondary	Raw retrieval response logs not retained across interruption; descriptors recovered from task context, not exact query bytes
+R08	2026-10-13	personal_context	Sep24/class/status; target 2024-10-08 through 2026-10-08	ERROR	Tool returned Error executing personal context search; no recovery result
+R09	2026-10-13	personal_context	politics/evidence/education; same target window; exclude campaign requests	secondary_only	Returned dated summaries/snippets without complete exchanges/stable conversation-message locators; zero certified original transcripts

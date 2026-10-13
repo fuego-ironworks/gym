@@ -1,0 +1,27 @@
+number	title	state_at_inspection	url	owner_jobs	action
+2	Make Gym survivable without GitHub, hosted runners, or model hosts	open	https://github.com/fuego-ironworks/gym/issues/2	SUN-BB-39	reconcile_existing_no_closure
+8	Teach models to recognize privilege	open	https://github.com/fuego-ironworks/gym/issues/8	SUN-BB-02;SUN-BB-07	reconcile_existing_no_closure
+9	Train the research reflex for jobs, pay, and career claims	open	https://github.com/fuego-ironworks/gym/issues/9	SUN-BB-04;SUN-BB-12	reconcile_existing_no_closure
+10	Train repeatable tool-using research on jobs and career paths	open	https://github.com/fuego-ironworks/gym/issues/10	SUN-BB-04	reconcile_existing_no_closure
+11	Preserve supported criticism without tone-policing or apologist reframing	open	https://github.com/fuego-ironworks/gym/issues/11	SUN-BB-02;SUN-BB-03;SUN-BB-06;SUN-BB-08;SUN-BB-09;SUN-BB-10;SUN-BB-16;SUN-BB-27	reconcile_existing_no_closure
+12	Respect claim scope instead of universalizing it and rebutting a straw man	open	https://github.com/fuego-ironworks/gym/issues/12	SUN-BB-02;SUN-BB-03;SUN-BB-08;SUN-BB-09;SUN-BB-16	reconcile_existing_no_closure
+13	Detect institutional-default pseudo-neutrality	open	https://github.com/fuego-ironworks/gym/issues/13	SUN-BB-02;SUN-BB-06;SUN-BB-10;SUN-BB-11	reconcile_existing_no_closure
+14	Reject prestige and brand names as proxies for actual outcomes	open	https://github.com/fuego-ironworks/gym/issues/14	SUN-BB-02;SUN-BB-06;SUN-BB-07	reconcile_existing_no_closure
+15	Require denominators and explicit causal arrows in education and career claims	open	https://github.com/fuego-ironworks/gym/issues/15	SUN-BB-04;SUN-BB-13	reconcile_existing_no_closure
+16	Separate occupational wage facts from program outcomes	open	https://github.com/fuego-ironworks/gym/issues/16	SUN-BB-04;SUN-BB-13	reconcile_existing_no_closure
+17	Treat credentials, accreditation, and publication as narrow evidence rather than general authority	open	https://github.com/fuego-ironworks/gym/issues/17	SUN-BB-05;SUN-BB-07;SUN-BB-14	reconcile_existing_no_closure
+18	Keep testimony and anecdotes at testimonial scope	open	https://github.com/fuego-ironworks/gym/issues/18	SUN-BB-03;SUN-BB-05;SUN-BB-09;SUN-BB-18;SUN-BB-30	reconcile_existing_no_closure
+19	Preserve subjects' own meanings instead of imposing therapeutic or theory-driven narratives	open	https://github.com/fuego-ironworks/gym/issues/19	SUN-BB-05;SUN-BB-18	reconcile_existing_no_closure
+20	Represent source, observation, inference, value judgment, and unresolved fact as different layers	open	https://github.com/fuego-ironworks/gym/issues/20	SUN-BB-03;SUN-BB-05;SUN-BB-09;SUN-BB-10;SUN-BB-14;SUN-BB-15;SUN-BB-18;SUN-BB-21;SUN-BB-22;SUN-BB-28;SUN-BB-30;SUN-BB-35	reconcile_existing_no_closure
+21	Separate enrollment decisions from learning plans	open	https://github.com/fuego-ironworks/gym/issues/21	SUN-BB-04;SUN-BB-11	reconcile_existing_no_closure
+22	Do not replace moral or responsibility questions with technical optimization	open	https://github.com/fuego-ironworks/gym/issues/22	SUN-BB-05;SUN-BB-11	reconcile_existing_no_closure
+23	Use rival models, counterexamples, and behavioral records instead of semantic-summary authority	open	https://github.com/fuego-ironworks/gym/issues/23	SUN-BB-05;SUN-BB-15;SUN-BB-17;SUN-BB-19;SUN-BB-21;SUN-BB-22;SUN-BB-23;SUN-BB-28;SUN-BB-29;SUN-BB-31;SUN-BB-32;SUN-BB-33;SUN-BB-35;SUN-BB-38;SUN-BB-40	reconcile_existing_no_closure
+24	Measure causal reliance on Black Ball evidence with ablations and fact changes	open	https://github.com/fuego-ironworks/gym/issues/24	SUN-BB-14;SUN-BB-16;SUN-BB-21;SUN-BB-36	reconcile_existing_no_closure
+25	Preserve dated pre-evidence baselines and compare before/after behavior	open	https://github.com/fuego-ironworks/gym/issues/25	SUN-BB-20;SUN-BB-36	reconcile_existing_no_closure
+26	Build the high-debt biomedical-engineering advising case as a first-class acceptance suite	open	https://github.com/fuego-ironworks/gym/issues/26	SUN-BB-04;SUN-BB-12;SUN-BB-19;SUN-BB-26;SUN-BB-37	reconcile_existing_no_closure
+27	Prevent Black Ball training from becoming reflexive anti-college pessimism	open	https://github.com/fuego-ironworks/gym/issues/27	SUN-BB-04;SUN-BB-12;SUN-BB-17;SUN-BB-37;SUN-BB-38	reconcile_existing_no_closure
+28	Link Gym to Black Ball/ragbin evidence with stable cross-repository pointers	open	https://github.com/fuego-ironworks/gym/issues/28	SUN-BB-01;SUN-BB-20;SUN-BB-36	reconcile_existing_no_closure
+29	Work job: mine old Black Ball chats into Gym training and evaluation cases	open	https://github.com/fuego-ironworks/gym/issues/29	SUN-BB-01;SUN-BB-24;SUN-BB-40	reconcile_existing_no_closure
+46	Audit whether career-oriented college programs actually promise employment	open	https://github.com/fuego-ironworks/gym/issues/46	SUN-BB-12	reconcile_existing_no_closure
+59	3-5 years of related experience	open	https://github.com/fuego-ironworks/gym/issues/59	SUN-BB-04;SUN-BB-13	reconcile_existing_no_closure
+62	Build reusable experiment matrix with paid-compute preflight	open	https://github.com/fuego-ironworks/gym/issues/62	SUN-BB-24;SUN-BB-25;SUN-BB-26;SUN-BB-27;SUN-BB-28;SUN-BB-29;SUN-BB-30;SUN-BB-31;SUN-BB-32;SUN-BB-33;SUN-BB-34;SUN-BB-35;SUN-BB-37;SUN-BB-38;SUN-BB-39;SUN-BB-40	reconcile_existing_no_closure

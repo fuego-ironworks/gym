@@ -1,0 +1,8 @@
+method_id	source	url	inspected	use	limit
+M01	Pythia project	https://github.com/EleutherAI/pythia	2026-10-08	Released model/checkpoint roster and training-data references	Verify actual revision and artifacts; a listed checkpoint is not a qualified local runtime
+M02	Pythia paper	https://proceedings.mlr.press/v202/biderman23a.html	2026-10-08	Controlled checkpoint studies over an inspectable model family	Does not identify proprietary ChatGPT training causes
+M03	PolyPythias paper	https://arxiv.org/html/2503.09543v1	2026-10-08	Independent training-seed replication design	Verify available sizes, seeds and revisions rather than assume a complete grid
+M04	Bias measurement with word filling	https://aclanthology.org/2023.eacl-main.265/	2026-10-08	Candidate wording and measurement validity	Likelihood contrast is a bounded metric, not unrestricted advice
+M05	Activation patching methodology	https://proceedings.iclr.cc/paper_files/paper/2024/hash/06a52a54c8ee03cd86771136bc91eb1f-Abstract-Conference.html	2026-10-08	Intervention design, matched controls and metric sensitivity	A patch effect alone is not unique semantic-feature identification
+M06	LLM judge evaluation	https://papers.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html	2026-10-08	Judge presentation/order sensitivity controls	Judge agreement is not ground truth
+M07	Debiasing evaluation	https://aclanthology.org/2022.acl-long.132/	2026-10-08	Collateral and held-out evaluation planning	No empirical correction claim is imported from a paper

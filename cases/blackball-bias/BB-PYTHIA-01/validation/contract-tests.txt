@@ -1,0 +1,40 @@
+Source commit: 3a02aef9a51306cc7caa9a125aaa5a6f67b8c578
+Unmodified existing files: tools/experiment_contract.py and tests/test_experiment_contract.py
+Command: python3 -m unittest discover -s tests -p test_experiment_contract.py -v
+Working directory: disposable copy containing those upstream files.
+This is existing Python migration debt; no new Python was authored.
+Exit status: 0
+test_cli_expand_and_invalid_json (test_experiment_contract.BundleTests.test_cli_expand_and_invalid_json) ... ok
+test_corrupt_missing_or_unindexed_bytes_rejected (test_experiment_contract.BundleTests.test_corrupt_missing_or_unindexed_bytes_rejected) ... ok
+test_extra_file_rejected (test_experiment_contract.BundleTests.test_extra_file_rejected) ... ok
+test_independent_readback (test_experiment_contract.BundleTests.test_independent_readback) ... ok
+test_interrupted_run_without_final_receipt_is_not_success (test_experiment_contract.BundleTests.test_interrupted_run_without_final_receipt_is_not_success) ... ok
+test_path_traversal_duplicate_and_symlink_rejected (test_experiment_contract.BundleTests.test_path_traversal_duplicate_and_symlink_rejected) ... ok
+test_wrong_job_skipped_check_empty_bundle_and_bad_size_rejected (test_experiment_contract.BundleTests.test_wrong_job_skipped_check_empty_bundle_and_bad_size_rejected) ... ok
+test_axis_order_value_order_and_duplicates_do_not_change_ids (test_experiment_contract.MatrixTests.test_axis_order_value_order_and_duplicates_do_not_change_ids) ... ok
+test_case_identity_binds_sources_environment_input_and_parameters (test_experiment_contract.MatrixTests.test_case_identity_binds_sources_environment_input_and_parameters) ... ok
+test_empty_axes_mean_one_fixed_case (test_experiment_contract.MatrixTests.test_empty_axes_mean_one_fixed_case) ... ok
+test_exclusion_is_exact_and_typed (test_experiment_contract.MatrixTests.test_exclusion_is_exact_and_typed) ... ok
+test_fixed_axis_and_ancestor_conflicts_rejected (test_experiment_contract.MatrixTests.test_fixed_axis_and_ancestor_conflicts_rejected) ... ok
+test_floats_nan_dirty_source_and_mutable_model_fail (test_experiment_contract.MatrixTests.test_floats_nan_dirty_source_and_mutable_model_fail) ... ok
+test_grouped_models_keep_repository_and_revision_together (test_experiment_contract.MatrixTests.test_grouped_models_keep_repository_and_revision_together) ... ok
+test_hash_collision_is_not_silent_deduplication (test_experiment_contract.MatrixTests.test_hash_collision_is_not_silent_deduplication) ... ok
+test_nested_product_keeps_all_coordinates (test_experiment_contract.MatrixTests.test_nested_product_keeps_all_coordinates) ... ok
+test_no_silent_empty_or_oversized_or_misspelled_matrix (test_experiment_contract.MatrixTests.test_no_silent_empty_or_oversized_or_misspelled_matrix) ... ok
+test_one_example_is_not_replaced_with_a_batch (test_experiment_contract.MatrixTests.test_one_example_is_not_replaced_with_a_batch) ... ok
+test_strict_json_rejects_duplicate_and_float_tokens (test_experiment_contract.MatrixTests.test_strict_json_rejects_duplicate_and_float_tokens) ... ok
+test_all_missing_stages_and_reordered_events_rejected (test_experiment_contract.PreflightTests.test_all_missing_stages_and_reordered_events_rejected) ... ok
+test_approval_is_bound_to_exact_prior_trace (test_experiment_contract.PreflightTests.test_approval_is_bound_to_exact_prior_trace) ... ok
+test_changed_job_request_or_resource_invalidates_evidence (test_experiment_contract.PreflightTests.test_changed_job_request_or_resource_invalidates_evidence) ... ok
+test_contract_module_has_no_network_or_process_imports (test_experiment_contract.PreflightTests.test_contract_module_has_no_network_or_process_imports) ... ok
+test_failure_skip_cancel_unknown_cannot_count_as_success (test_experiment_contract.PreflightTests.test_failure_skip_cancel_unknown_cannot_count_as_success) ... ok
+test_gpu_request_cannot_be_approved_by_cpu_smoke (test_experiment_contract.PreflightTests.test_gpu_request_cannot_be_approved_by_cpu_smoke) ... ok
+test_semantic_failures_survive_rehashing (test_experiment_contract.PreflightTests.test_semantic_failures_survive_rehashing) ... ok
+test_stale_future_backwards_and_wrong_source_or_job_fail (test_experiment_contract.PreflightTests.test_stale_future_backwards_and_wrong_source_or_job_fail) ... ok
+test_tampered_evidence_and_boolean_numeric_fields_rejected (test_experiment_contract.PreflightTests.test_tampered_evidence_and_boolean_numeric_fields_rejected) ... ok
+test_valid_trace_does_not_enable_paid_execution (test_experiment_contract.PreflightTests.test_valid_trace_does_not_enable_paid_execution) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.144s
+
+OK
