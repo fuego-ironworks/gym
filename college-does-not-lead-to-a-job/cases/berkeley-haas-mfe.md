@@ -24,7 +24,11 @@ For the Class of 2025 the program reports:
 - 67 students receiving offers;
 - 67 accepting offers.
 
-The program therefore reports very high placement, but not universal placement among job seekers.
+These are **institution-reported offer and acceptance counts among job seekers**.
+They do not establish actual starts, retention, job quality, use of the purchased
+courses, graduates' satisfaction or incremental value of the degree. The three
+outside the acceptance count remain unexplained; the other 67 must not be
+classified as good bargains from the table.
 
 No explicit guarantee of a full-time post-graduation job was found on the official pages reviewed on 2026-09-27.
 
@@ -33,7 +37,25 @@ No explicit guarantee of a full-time post-graduation job was found on the offici
 Preserve all three statements simultaneously:
 
 1. Haas markets career placement aggressively.
-2. Haas reports strong historical employment outcomes.
+2. Haas reports offer and acceptance counts under its own definitions; person-level outcomes have not been independently inspected.
 3. Neither of those facts is the same as a contractual promise that each graduate will receive a job.
 
-That distinction is the purpose of this branch.
+That distinction is one part of the evaluation. Separate the contractual
+question from the empirical questions about actual work and the value of training.
+
+## Contrary practitioner account and corrected GPT inference
+
+[Giuseppe Paleologo's September 19, 2025 post](https://x.com/__paleologo/status/1969189262340792564)
+reports a senior quant's account of never using derivatives-pricing mathematics
+from a CMU computational-finance master's, plus an MSFE adviser's concern about
+curriculum serving banks of twenty years earlier. The quant is unnamed; the
+source does not identify a Berkeley graduate or establish the quant's city.
+
+This challenges the inference from finance coursework or offer counts to actual
+course use. It does not need to falsify the school's count to invalidate that
+inference. Retrieve the [evaluation case](berkeley-placement-inference-regression.md)
+when an answer responds to doubts about training value with placement reassurance.
+
+The original September 27 wording called the aggregate strong employment
+outcomes. This October 13 correction withdraws that stronger interpretation;
+the school's raw reported counts remain attributed and inspectable.

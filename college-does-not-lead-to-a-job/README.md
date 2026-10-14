@@ -4,7 +4,10 @@ This branch audits a narrow question:
 
 > When a college program markets itself as preparation for a career, what employment obligation does the institution actually undertake?
 
-The title is a hypothesis/prompt, not a universal empirical claim. Many programs have excellent placement. The distinction is between **career marketing and outcomes** on one hand and an **employment promise or contract** on the other.
+The title is a hypothesis/prompt, not a universal empirical claim. Distinguish
+**career marketing, school-reported counts, independently inspected career
+outcomes, use of purchased training and an employment promise or contract**.
+Each answers a different question.
 
 ## For every program, record separately
 
@@ -38,7 +41,8 @@ Examples include:
 - median salary claims;
 - testimonials.
 
-Those claims may be informative and may be supported by excellent outcomes. But they are not the same thing as:
+Keep those as attributed institutional claims until their underlying career
+events are inspected. They do not establish either training value or:
 
 > If you complete this program, we or a named employer will employ you.
 
@@ -60,7 +64,8 @@ Official pages reviewed:
 
 No explicit contract or guarantee of a post-graduation job was found on the official program/career pages reviewed.
 
-That is compatible with the program having valuable employer connections and good outcomes. It simply answers a different question from the marketing language.
+This answers the contract question within the reviewed source scope. Employer
+connections, actual outcomes and training value require separate evidence.
 
 Status: `no_job_guarantee_found_in_reviewed_materials`.
 
@@ -84,7 +89,10 @@ For the Class of 2025, Haas reports:
 - 67 received offers;
 - 67 accepted offers.
 
-Thus the published outcome itself is not universal employment.
+These are school-reported offer events among job seekers. They do not establish
+verified starts, retention, course use, satisfaction or a good bargain. The three
+outside the acceptance count remain unexplained. A positive-sounding aggregate
+must not erase a contrary account of actual work.
 
 No explicit guarantee of full-time post-graduation employment was found on the official pages reviewed.
 
@@ -100,12 +108,22 @@ Pythia should ask:
 
 - 96% of whom?
 - by what date?
-- offer or accepted job?
+- offer, acceptance, actual start or retained job?
+- did the actual duties use the purchased curriculum?
+- did the graduate want the job and consider the transaction worthwhile?
+- did the job require unwanted relocation or further credentials?
 - what jobs?
 - what salary distribution?
 - how many did not receive one?
 - is placement a reported historical outcome, a forecast, or a contractual promise?
 - what exactly does the school owe a student who graduates without the advertised outcome?
+
+## Corrected inference case
+
+[Berkeley placement and the Paleologo account](cases/berkeley-placement-inference-regression.md)
+records the failure of using offer counts to reassure about the work or price.
+The criteria are ready for a source-grounded evaluation; no model replay or
+passing model receipt has been produced by this documentation change.
 
 ## Cross-links
 
