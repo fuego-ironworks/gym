@@ -8,7 +8,9 @@ For Berkeley Haas MFE Class of 2025, the program reports:
 - 67 received offers;
 - 67 accepted offers.
 
-That answers one narrow question about an early post-graduation window.
+These are the school's stated offer/acceptance counts. This note does not
+independently verify the underlying careers or establish the precise collection
+method and cutoff for those counts.
 
 It does **not** by itself answer:
 
@@ -21,6 +23,8 @@ It does **not** by itself answer:
 - layoffs, firings, voluntary exits, or visa-related exits;
 - total compensation rather than initial base salary;
 - hours and working conditions;
+- which purchased courses were used in actual daily tasks;
+- required relocation and whether the graduate wanted that location;
 - whether the graduate says the degree was worth its cost;
 - counterfactual outcome without the degree;
 - whether the degree caused the placement or mainly selected people already likely to place well.
@@ -29,7 +33,12 @@ It does **not** by itself answer:
 
 Use public professional profiles, personal sites, blogs, interviews, alumni pages, and archived material.
 
-For each graduate, record only observable facts:
+Treat a public profile as the person's self-report and an alumni spotlight as
+the institution's selected presentation. A row in this table is a source-linked
+lead, not independent verification of employment. Historical checks are not
+current employment receipts. Record known source identity and missing captures.
+
+For each graduate, record attributable observations and their evidence kind:
 
 - pre-program employment;
 - internship during the program;
@@ -63,7 +72,8 @@ The longer-term questions matter more than launch placement:
 
 ## Causal caution
 
-A selective professional master's can show excellent placement because:
+Candidate explanations for an association between enrollment and reported
+offers include:
 
 1. the program teaches valuable skills;
 2. the program provides employer access;
@@ -72,7 +82,9 @@ A selective professional master's can show excellent placement because:
 5. students enter with prior relevant experience;
 6. all of the above.
 
-The follow-up data should not assume which mechanism dominates.
+None of those mechanisms is established by the offer count alone. The
+follow-up data should not assume which mechanism dominates or that valuable
+skills caused the outcome.
 
 ## Explicit first-person material
 
@@ -87,3 +99,10 @@ When a graduate publishes something like:
 cross-link the item to the `regret` branch.
 
 Only use the person's own statement for the sentiment classification.
+
+## Course-use counterevidence
+
+The [Berkeley/Paleologo case](cases/berkeley-placement-inference-regression.md)
+keeps a concrete unused-training account beside the placement assertions.
+A useful follow-up must inspect work and course use; a reassuring offer count
+cannot substitute for those observations.
