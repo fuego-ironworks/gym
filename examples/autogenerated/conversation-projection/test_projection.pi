@@ -1,0 +1,55 @@
+import numpy as np
+from builtins import dict
+from typing import Callable, Any
+import os
+import subprocess
+from pathlib import Path
+from arithmetic import decode_codes, encode_values, store_codes, load_codes, matrix_product
+from train import train
+
+
+def rejects(program ∈ str, diagnostic ∈ str) → None:
+    entrypoint ∈ str ← os.environ.get("ITHON_ENTRYPOINT", "")
+    environment ∈ dict[str, str] ← dict(os.environ)
+    environment["PYTHONPATH"] ← str(Path(__file__).resolve().parent)
+    result ∈ Any ← subprocess.run([entrypoint, "-c", program],
+                                  cwd=str(Path(__file__).resolve().parent),
+                                  capture_output=True, text=True, env=environment)
+    status ∈ int ← result.returncode
+    stderr ∈ str ← result.stderr
+    found ∈ int ← stderr.find(diagnostic)
+    assert status != 0
+    assert found >= 0, stderr
+
+
+codes ∈ np.ndarray ← np.arange(512, dtype=np.uint16)
+for layout in ("low16", "fp16-position16", "dense9"):
+    assert np.array_equal(codes, load_codes(store_codes(codes, layout), codes.shape, layout))
+finite ∈ np.ndarray ← np.isfinite(decode_codes(codes))
+assert np.array_equal(codes[finite], encode_values(decode_codes(codes[finite])))
+binary16 ∈ np.ndarray ← (codes << 7).view(np.float16).astype(np.float32)
+assert np.array_equal(binary16[finite].view(np.uint32), decode_codes(codes[finite]).view(np.uint32))
+rounded ∈ list[int] ← encode_values(np.array([2.0**-18, 63488, -0.0, np.nan], dtype=np.float32)).tolist()
+assert rounded == [0, 248, 256, 252]
+ties ∈ list[int] ← encode_values(np.array([1.0625, 1.1875, -1.0625], dtype=np.float32)).tolist()
+assert ties == [120, 122, 376]
+not_double_rounded ∈ np.ndarray ← encode_values(np.array([1.0626], dtype=np.float32))
+assert int(not_double_rounded[0]) == 121
+rejects('import numpy as np; from arithmetic import load_codes; load_codes(np.array([1], dtype=np.uint16), (1,), "fp16-position16")', "FP16_POSITION_PADDING")
+rejects('import numpy as np; from arithmetic import load_codes; load_codes(np.array([0], dtype=np.uint8), (1,), "dense9")', "DENSE9_SIZE")
+rejects('import numpy as np; from arithmetic import load_codes; load_codes(np.array([0, 128], dtype=np.uint8), (1,), "dense9")', "DENSE9_PADDING")
+rng ∈ Any ← np.random.default_rng(17)
+features ∈ np.ndarray ← rng.normal(0, 0.1, (12, 9)).astype(np.float32)
+targets ∈ np.ndarray ← rng.normal(0, 0.1, (12, 5)).astype(np.float32)
+results ∈ list[np.ndarray] ← []
+for layout in ("low16", "fp16-position16", "dense9"):
+    training_result ∈ tuple[np.ndarray, dict[str, Any]] ← train(features, targets, steps=8, storage="e5m3", layout=layout, multiplication="float16")
+    weights ∈ np.ndarray ← training_result[0]
+    receipt ∈ dict[str, Any] ← training_result[1]
+    assert receipt["weight_cache_rebuilds"] == 8
+    results.append(weights)
+assert np.array_equal(results[0], results[1])
+assert np.array_equal(results[0], results[2])
+rejects('import numpy as np; from train import train; train(np.array([[np.inf]]), np.array([[0]]))', "NONFINITE_INPUT")
+rejects('import numpy as np; from arithmetic import matrix_product; matrix_product(np.ones((1, 1)), np.ones((1, 1)), "e5m3", "float32")', "PRECISION")
+print("PASS: exhaustive layouts, rounding boundaries, padding rejection and training parity")
