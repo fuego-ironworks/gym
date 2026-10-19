@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "protocol": "Original full source from immutable pre/post Git commits; same task both variants; blind wrapper labels; no synthetic code.",
+  "pairs": [
+    {
+      "id": "fourier-horner",
+      "repository": "isomorphismes/Fourier-sound",
+      "before": {
+        "commit": "ac0e9b40a556012b42be240f1c32c88370028b4a",
+        "files": [
+          {
+            "alias": "code.c",
+            "path": "fourier/ick_polynomial_leaf.c",
+            "blob_sha": "a0a544022bd6b8ee12ea36d204f2c6d70b7047a6"
+          }
+        ]
+      },
+      "after": {
+        "commit": "e5d270bd6e53f111d22b51111b2804024fb48878",
+        "files": [
+          {
+            "alias": "code.c",
+            "path": "fourier/ick_polynomial_leaf.c",
+            "blob_sha": "340661cc3bc02607337f59ccaa16949d46fec942"
+          }
+        ]
+      },
+      "provenance": "Before/after of the existing Horner polynomial leaf; code body changed, exported ABI retained. Existing branch tests include frozen-reference comparisons.",
+      "questions": [
+        {
+          "id": "linear-i",
+          "question": "Given coefficients_cartesian=[1,2,3,-1], coefficient_count=2, term_count=2, z_real=0, z_imag=1, what real and imaginary components are written? Answer object with keys real and imaginary.",
+          "answer": {
+            "real": 2,
+            "imaginary": 5
+          }
+        },
+        {
+          "id": "count-clamping",
+          "question": "If coefficient_count=2 and term_count=99, how many coefficients participate in evaluation? Answer integer.",
+          "answer": 2
+        },
+        {
+          "id": "empty-polynomial",
+          "question": "With coefficient_count=0 and term_count=7, what are the two output components? Answer object with keys real and imaginary.",
+          "answer": {
+            "real": 0,
+            "imaginary": 0
+          }
+        },
+        {
+          "id": "ignore-excess-coefficient",
+          "question": "With coefficients_cartesian=[1,0,2,0,100,0], coefficient_count=3, term_count=2, and z=2+0i, what output is written? Answer object with keys real and imaginary.",
+          "answer": {
+            "real": 5,
+            "imaginary": 0
+          }
+        },
+        {
+          "id": "alias-output",
+          "question": "If output_cartesian points to the start of coefficients_cartesian, does this implementation finish reading coefficients before writing the output? Answer true or false.",
+          "answer": true
+        }
+      ],
+      "edits": [
+        {
+          "id": "guard-null-output",
+          "instruction": "Change only the exported function to return immediately if output_cartesian is NULL; preserve non-null behavior and the original source's syntax. Supply a unified diff for code.c."
+        }
+      ]
+    },
+    {
+      "id": "seifert-ribbons",
+      "repository": "isomorphismes/seifert",
+      "before": {
+        "commit": "eb1824cfb7acfd8344a03a0e399a6241e03f8724",
+        "files": [
+          {
+            "alias": "seifert.h",
+            "path": "native/seifert.h",
+            "blob_sha": "bf4dbfcc9fb5a26e8c8b5f59196ab5ab1c245888"
+          },
+          {
+            "alias": "code.c",
+            "path": "native/seifert.c",
+            "blob_sha": "7a041a2783f6340070644dd405479a04c7c08849"
+          }
+        ]
+      },
+      "after": {
+        "commit": "d7aae04d12a25364bf9348166a2b6b0b9cb15972",
+        "files": [
+          {
+            "alias": "seifert.h",
+            "path": "native/seifert.h",
+            "blob_sha": "d987a4ebbb4b82dd8104ffa7fddfd888411789e4"
+          },
+          {
+            "alias": "code.c",
+            "path": "icky/seifert.c",
+            "blob_sha": "3cf50c6cf16dd30f05960ba44dc8b7acc240b795"
+          }
+        ]
+      },
+      "provenance": "Installed v0.2 C source against the Icky style branch. Existing qualification/v02/test_equivalence.c checks sampled geometry, not all inputs.",
+      "questions": [
+        {
+          "id": "short-ribbon-vertices",
+          "question": "What integer does seifert_ribbon_vertex_count(2) return?",
+          "answer": 12
+        },
+        {
+          "id": "max-ribbon-indices",
+          "question": "What integer does seifert_ribbon_index_count(512) return?",
+          "answer": 6144
+        },
+        {
+          "id": "corner-center",
+          "question": "Immediately after seifert_scene_init, what is the center for block index 1? Answer object with x, y, z.",
+          "answer": {
+            "x": 1.9,
+            "y": 1.9,
+            "z": 0
+          }
+        },
+        {
+          "id": "invalid-large-turn",
+          "question": "On a freshly initialized valid scene, what SeifertStatus enum constant is returned by seifert_scene_turn(&scene,1,100001.0f)? Answer the enum constant name as a string.",
+          "answer": "SEIFERT_INVALID_ARGUMENT"
+        },
+        {
+          "id": "ribbon-width-invalid",
+          "question": "On a freshly initialized scene, if ribbon_half_width is set to 0.5f while block_half_extent remains 0.46f, does seifert_scene_valid return nonzero? Answer true or false.",
+          "answer": false
+        },
+        {
+          "id": "invalid-segments",
+          "question": "What integer does seifert_ribbon_vertex_count(0) return?",
+          "answer": 0
+        }
+      ],
+      "edits": []
+    }
+  ]
+}
