@@ -1,0 +1,14 @@
+claim_id	evidence_kind	claim	evidence	status	scope_limit
+CL01	artifact_observation	40 complete SUN assignment texts are written	jobs/ and SUN-BB-PYTHIA-40-JOBS.txt	SUPPORTED_AS_WRITTEN	No dispatch or downstream execution receipt
+CL02	artifact_observation	24 provisional synthetic families each contain eight literal variants	corpus/ and validation/composition-checks.tsv	SUPPORTED_AS_AUTHORED	Not 24 historical incidents or 192 observed failures
+CL03	recovery_observation	Complete original exchanges recovered into this packet: zero	sources/recovery-coverage.tsv	INCOMPLETE_RECOVERY	No estimate of historical frequency or original availability outside inspected surfaces
+CL04	source_observation	September 24 public record describes status-protective framing	S01	SUPPORTED_AS_DATED_RECORD	Original transcript not included; model label not endpoint identity
+CL05	retained_arithmetic	Retained canonical BME means -0.1300983800 and +0.1550124133; pair signs +,+,- at both checkpoints	validation/retained-bme-arithmetic.tsv	SUPPORTED_FROM_ROUNDED_TSV	Not fresh model inference or general advising behavior
+CL06	retained_intervention_report	Earlier stronger cross-checkpoint replacement sign-flip claim did not reproduce under the reported scopes	S14	SUPPORTED_AS_RETAINED_REPORT	No new independent intervention run in this packet
+CL07	offline_execution	29 existing experiment-contract tests pass on exact fetched source	validation/contract-tests.txt; validation/environment.tsv	PASS_OFFLINE_CHECKS	No provider authority or model result follows
+CL08	offline_execution	Four 48-case fixture shards and one six-case pinned BME plan expand into 198 unique case IDs	validation/matrix-membership.tsv; validation/matrix-receipts.tsv	PASS_EXPANSION	Expansion only; 192 synthetic prompts plus six replay cases are different units
+CL09	scoring_design	Rubrics and partitions are author drafts; candidate finals were exposed	protocol.md; corpus/families.tsv	NOT_CALIBRATED_NOT_FROZEN	Independent semantic validation and final freeze pending
+CL10	mechanism_hypothesis	ChatGPT institutional protection arises from a particular hidden training mechanism	NONE	UNESTABLISHED	Pythia similarity and model self-explanations cannot establish this
+CL11	intervention_hypothesis	A proposed LoRA, retrieval or training recipe corrects the target behavior	NONE	NOT_RUN	No improvement or transfer claim
+CL12	coverage_hypothesis	Selected corpus failure rates estimate ordinary model use	NONE	UNSUPPORTED	Selected failures and dependent variants are not a representative sample
+CL13	delivery_status	STAR/Ultra requested; 40 SUN jobs prepared	user specification and job text	CONFIGURATION_UNVERIFIED	No tool selected an external model tier; no job dispatch or trusted surface-delivery attestation

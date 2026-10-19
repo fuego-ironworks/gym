@@ -1,0 +1,15 @@
+key	value
+date	2026-10-13
+host_class	disposable_work_mode_container
+uname	Linux 6.18.44 x86_64
+python	3.12.14
+contract_source_repository	fuego-ironworks/gym
+contract_source_commit	3a02aef9a51306cc7caa9a125aaa5a6f67b8c578
+contract_git_blob	adfe05ccf0b442cfa66d5f6078776c950182fd45
+tests_git_blob	1bed06695dd07b84b33488fb1414fbd6c8cad9ef
+execution	unchanged_upstream_standard_library_code
+model_runtime	NOT_QUALIFIED
+paid_execution	DISABLED
+inference	NOT_RUN
+source_copy	fetched exact GitHub file bytes; no source modifications
+new_maintained_program	NONE

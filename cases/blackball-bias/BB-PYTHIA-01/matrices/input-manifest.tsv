@@ -1,0 +1,4 @@
+artifact	sha256	meaning
+corpus/prompts.tsv	d2e758217461b42962ec942aa71be876fba93f2a77a4b74a077613c5e29dba1c	192 exact authored candidate inputs
+corpus/rubrics.tsv	172850272c5495210fa87eed5ac3aed50c8e19eaa380b2f58d0f3d36adaa0b9f	provisional author rubrics
+corpus/families.tsv	c1a0b09cddbb9ec1feb5ae9167b02ef5f6627ff62497b58e379d7fcd120445fc	24 provisional family assignments
