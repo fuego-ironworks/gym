@@ -1,0 +1,7 @@
+check	scope	source_commit	attempt	status	observed_result
+case_joins	F24; SUN-BB-21	e59c96fc45f1802838dc64691ef0f13a0f52325e	local-synthetic-1	PASS	All eight exact case IDs join to the prompt and rubric inputs. All 23 fixture IDs and 9 mapping IDs are unique.
+vocabulary	F24; SUN-BB-21	07f84bd3f368efe393fcef6b740633078b2b22dc	local-synthetic-1	PASS	All seven ai-ci verdicts and their applicable orthogonal dimensions match retained upstream case expectations.
+fixture_controls	F24; SUN-BB-21	e59c96fc45f1802838dc64691ef0f13a0f52325e	local-synthetic-1	PASS	11 ACCEPT, 11 REJECT and one WITHHOLD. Every mapping has a positive and at least one negative control. No comparative case lacks the stipulated two usable outputs.
+campaign_checkpoint	BB-PYTHIA-01	e59c96fc45f1802838dc64691ef0f13a0f52325e	local-synthetic-1	PASS	At the starting Gym pythia head all 40 historical rows record WRITTEN_NOT_DISPATCHED. This work records a new manual execution of job 21 only.
+existing_suite	Gym pythia	e59c96fc45f1802838dc64691ef0f13a0f52325e	local-unit-1	PASS	Ran 82 tests in 1.390s; 76 passed and six skipped. See local-unit-log.txt.
+scorer_and_provider	F24; SUN-BB-21	e59c96fc45f1802838dc64691ef0f13a0f52325e	none	NOT_RUN	Authored case observations and structural checks only. No scorer inference, calibration, provider call or training.

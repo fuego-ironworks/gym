@@ -1,0 +1,6 @@
+limit_id	status	scope	boundary
+L01	NOT_RUN	provider inference and training	Case and answer text is synthetic and authored. No model execution or paid compute.
+L02	NOT_RUN	scorer calibration	Expected decisions were checked offline. No independent blind scorer calibration or real endpoint receipt.
+L03	NOT_APPLICABLE	discussion of prevalence	One F24 source family with eight variants and synthetic contrasts. Variants and candidate judgments are dependent.
+L04	OPEN	ai-ci enforcement	Existing verdict vocabulary is reused. A provider or executable classifier remains separately scoped.
+L05	OPEN	historical source recovery	No transcript recovery or inference about a proprietary training mechanism in this job.
