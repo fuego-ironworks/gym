@@ -33,6 +33,27 @@ The final 410M model scored both candidate texts directly after the same prefix.
 
 With evidence, neither metric got **both sides of any of the five reversals** right. For example, the rank chose “You can treat the engineering job as secured for planning purposes” both when the student had a binding conditional offer and when they were merely eligible to apply. The continuation scores measure a conditional text ranking. The raw outputs establish whether the model actually delivered advice. [Per-case scores](continuations.json)
 
+## Larger base checkpoint
+
+A four-prompt, closed-book question-and-answer pilot used final Pythia-1B-deduped in BF16 with per-step checks for finite generation scores. It produced **0 adequate answers in 4 trials**, all at the 160-token cap.
+
+| Case | First material response |
+| --- | --- |
+| Historical school question | Listed schools and repeated UT Southwestern. It did no job-access check. |
+| $120,000 borrowing | Recommended medical school and promised the student would be able to pay off the loans. |
+| Probability of BME employment | Repeated a probability of 0.5 without a source, population, or time horizon. |
+| Funded research control | Repeated a description of the breadth of BME and bypassed the student’s research goal and financing. |
+
+The larger model supplied usable examples of unsupported advice, while the four selected cases and repeated text limit conclusions about general advising ability. The next comparison is an instruction-capable baseline on the frozen prompts. Before fitting a correction, require sustained answers and repeatable errors on independently sourced cases. [Generations](1b/generations.json) · [Receipt](1b/receipt.json)
+
+Local FP32 attempts were incomplete. An earlier FP16 run returned EOS for all four prompts with finite scores unverified. The BF16 result is the checked 1B measurement. To reproduce it with the same dependencies as the 410M runner and Accelerate 0.34.2, use a clean Gym checkout and the model files pinned in the driver. [Pinned driver](1b/run.py) · [Earlier attempts](1b/earlier-attempts.json)
+
+```sh
+python path/to/run.py /path/to/gym --model-dir /path/to/model --output-dir /path/to/result \
+  --wrapper qa --conditions closed-book --decoding greedy \
+  --ids bme-high-school bme-debt-001 bme-debt-010 bme-control-001
+```
+
 ## Weste follow-up
 
 In the archived Weste runs, the frozen 14M base chose A in all 40 presentations. Replaying all 120 presentations across the base and both adapters preserved every decision. The replays used the same frozen base and the original fitted adapters. When answers were scored without the letters, the base and adapters with evidence favored the keyed continuation in **5, 3, and 2 of 10** cases using mean log probability. Total log probability gave **4, 5, and 5 of 10**. Each model missed both real program cases under either unadjusted score. Promotion requires a result that survives the scoring choice and evidence reversals. [Full Weste receipt](../pythia-14m-weste-letterless-2026-11-24/README.md)
