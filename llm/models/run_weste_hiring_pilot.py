@@ -23,7 +23,7 @@ REVISION = "0412c27fd5dcade8d1ff02273769acfb0c71421b"
 FILES = {
     "model.safetensors": "d03d421ac835a0bfb64b5922acd780b84fac65f5ae84c2db59afa77773112d83",
     "config.json": "5536386c1709fd29d9617fca802bb8f592071ac279f772b5c63a6be3db3488e2",
-    "tokenizer.json": "3cf430678137c8491ca82fb7092ee49e44ad38857fffe1e4a5ed860139a5b8",
+    "tokenizer.json": "3cf430678137c8491ca82fb7092ee49e44ad38857fffe1e4a4a5ed860139a5b8",
     "tokenizer_config.json": "4d1c4fdcf128d28ffcc56e21a36f7002b5e754624c9c8cbd025df7fa58af8428",
     "generation_config.json": "4cc3ecaaf254b8eed6b256d588741da925bdc229060b9ba9e04f4ce1b3fe7d0b",
     "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
