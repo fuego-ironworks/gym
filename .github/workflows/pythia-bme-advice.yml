@@ -16,8 +16,13 @@ permissions:
 jobs:
   cpu-baseline:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        slice: [0, 1, 2, 3, 4]
     env:
+      SHARD_INDEX: ${{ matrix.slice }}
       GYM_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
       HF_HUB_DISABLE_TELEMETRY: "1"
       TOKENIZERS_PARALLELISM: "false"
@@ -41,11 +46,17 @@ jobs:
           done
       - name: Record raw continuations and scores
         run: |
-          python llm/models/run_pythia_bme_advice.py --model-dir "$RUNNER_TEMP/bme-model" --output-dir "$RUNNER_TEMP/bme-results/literal"
-          python llm/models/run_pythia_bme_advice.py --model-dir "$RUNNER_TEMP/bme-model" --output-dir "$RUNNER_TEMP/bme-results/scores" --mode score
+          if [[ "$SHARD_INDEX" == 4 ]]; then
+            python llm/models/run_pythia_bme_advice.py --model-dir "$RUNNER_TEMP/bme-model" --output-dir "$RUNNER_TEMP/bme-results/scores" --mode score
+          else
+            mapfile -t cases < <(jq -s -r --argjson shard "$SHARD_INDEX" '.[$shard * 4 : ($shard + 1) * 4][].id' cases/blackball-bias/BB-PYTHIA-01/bme-advice/prompts.jsonl)
+            test "${#cases[@]}" -gt 0
+            python llm/models/run_pythia_bme_advice.py --model-dir "$RUNNER_TEMP/bme-model" --output-dir "$RUNNER_TEMP/bme-results/literal" --ids "${cases[@]}"
+            python llm/models/run_pythia_bme_advice.py --model-dir "$RUNNER_TEMP/bme-model" --output-dir "$RUNNER_TEMP/bme-results/qa" --ids "${cases[@]}" --wrapper qa --decoding greedy --conditions closed-book
+          fi
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: bme-advice-${{ github.run_id }}-${{ github.run_attempt }}
+          name: bme-advice-${{ github.run_id }}-${{ github.run_attempt }}-slice-${{ matrix.slice }}
           path: ${{ runner.temp }}/bme-results
           if-no-files-found: error

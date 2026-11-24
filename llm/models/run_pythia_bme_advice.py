@@ -61,7 +61,8 @@ def generate(model, tokenizer, cases, args, output):
     all_rows = []
     for start in range(0, len(cases), args.batch):
         batch = cases[start:start + args.batch]
-        for condition, context in (("closed-book", ""), ("evidence", evidence)):
+        for condition in args.conditions:
+            context = evidence if condition == "evidence" else ""
             prompts = [render(case["question"], context, args.wrapper) for case in batch]
             enc = tokenizer(prompts, padding=True, return_tensors="pt", add_special_tokens=False)
             prompt_lengths = enc.attention_mask.sum(dim=1)
@@ -118,6 +119,8 @@ def main():
     parser.add_argument("--ids", nargs="+")
     parser.add_argument("--decoding", nargs="+", choices=("greedy", "sample"),
                         default=["greedy", "sample"])
+    parser.add_argument("--conditions", nargs="+", choices=("closed-book", "evidence"),
+                        default=["closed-book", "evidence"])
     args = parser.parse_args()
     if min(args.tokens, args.threads, args.batch) < 1:
         parser.error("tokens, threads and batch must be positive")
@@ -141,7 +144,8 @@ def main():
         "inputs": {filename: file_sha256(CASES / filename) for filename in (name, "evidence.txt")},
         "ids": [case["id"] for case in cases], "mode": args.mode, "precision": "float32",
         "threads": args.threads, "batch": args.batch, "wrapper": args.wrapper,
-        "decoding": args.decoding, "max_new_tokens": args.tokens, "sampling_seed_per_batch": SEED,
+        "decoding": args.decoding, "conditions": args.conditions,
+        "max_new_tokens": args.tokens, "sampling_seed_per_batch": SEED,
         "temperature": 0.7, "top_p": 0.9,
         "setup_seconds": round(time.perf_counter() - t0, 3),
         "versions": {name: metadata.version(name) for name in ("torch", "transformers")},
