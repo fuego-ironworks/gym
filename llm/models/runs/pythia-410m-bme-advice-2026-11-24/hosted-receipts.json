@@ -1,0 +1,474 @@
+{
+  "artifacts": {
+    "slice-0.zip": "8934ec9f735306ddb9bdbb71c7860ac30019c6692cb87828fea09f90abfbecc1",
+    "slice-1.zip": "44b4fefed65d7e335683de08e8c390d6ab8520f16e2561cc493181325f018aea",
+    "slice-2.zip": "226d35c8459f818d6df179ae38891d186766dc0a689eaff6589bd84e5e35a162",
+    "slice-3.zip": "ba36192a0ec7f82cd020cf43d3dd670ccadc1fdbad8c4431d66f35c27ecfb303",
+    "slice-4.zip": "97d073161f55c5274c9388506dfa1a65911efdcb2aac1ac21fe8d868d42662ad"
+  },
+  "runs": {
+    "hosted/slice-0/literal": {
+      "batch": 4,
+      "conditions": [
+        "closed-book",
+        "evidence"
+      ],
+      "decoding": [
+        "greedy",
+        "sample"
+      ],
+      "elapsed_seconds": 116.21,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-high-school",
+        "bme-debt-001",
+        "bme-debt-002",
+        "bme-debt-003"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 3475572,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 16,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.609,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "literal"
+    },
+    "hosted/slice-0/qa": {
+      "batch": 4,
+      "conditions": [
+        "closed-book"
+      ],
+      "decoding": [
+        "greedy"
+      ],
+      "elapsed_seconds": 26.941,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-high-school",
+        "bme-debt-001",
+        "bme-debt-002",
+        "bme-debt-003"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 2434324,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 4,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.671,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "qa"
+    },
+    "hosted/slice-1/literal": {
+      "batch": 4,
+      "conditions": [
+        "closed-book",
+        "evidence"
+      ],
+      "decoding": [
+        "greedy",
+        "sample"
+      ],
+      "elapsed_seconds": 120.371,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-004",
+        "bme-debt-005",
+        "bme-debt-006",
+        "bme-debt-007"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 3413608,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 16,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.656,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "literal"
+    },
+    "hosted/slice-1/qa": {
+      "batch": 4,
+      "conditions": [
+        "closed-book"
+      ],
+      "decoding": [
+        "greedy"
+      ],
+      "elapsed_seconds": 26.012,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-004",
+        "bme-debt-005",
+        "bme-debt-006",
+        "bme-debt-007"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 2403708,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 4,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.687,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "qa"
+    },
+    "hosted/slice-2/literal": {
+      "batch": 4,
+      "conditions": [
+        "closed-book",
+        "evidence"
+      ],
+      "decoding": [
+        "greedy",
+        "sample"
+      ],
+      "elapsed_seconds": 87.505,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-008",
+        "bme-debt-009",
+        "bme-debt-010",
+        "bme-debt-011"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 3434652,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 16,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.594,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "literal"
+    },
+    "hosted/slice-2/qa": {
+      "batch": 4,
+      "conditions": [
+        "closed-book"
+      ],
+      "decoding": [
+        "greedy"
+      ],
+      "elapsed_seconds": 19.188,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-008",
+        "bme-debt-009",
+        "bme-debt-010",
+        "bme-debt-011"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 2368440,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 4,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.579,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "qa"
+    },
+    "hosted/slice-3/literal": {
+      "batch": 4,
+      "conditions": [
+        "closed-book",
+        "evidence"
+      ],
+      "decoding": [
+        "greedy",
+        "sample"
+      ],
+      "elapsed_seconds": 57.493,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-012",
+        "bme-control-001",
+        "bme-control-002"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 3070996,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 12,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.597,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "literal"
+    },
+    "hosted/slice-3/qa": {
+      "batch": 4,
+      "conditions": [
+        "closed-book"
+      ],
+      "decoding": [
+        "greedy"
+      ],
+      "elapsed_seconds": 12.407,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-debt-012",
+        "bme-control-001",
+        "bme-control-002"
+      ],
+      "inputs": {
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca",
+        "prompts.jsonl": "6e01c719efca67488c1a1b3406c233600f26e6ef28243dc592e80aeef2210d11"
+      },
+      "max_new_tokens": 160,
+      "mode": "generate",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 2312320,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 3,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.567,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "qa"
+    },
+    "hosted/slice-4/scores": {
+      "batch": 4,
+      "conditions": [
+        "closed-book",
+        "evidence"
+      ],
+      "decoding": [
+        "greedy",
+        "sample"
+      ],
+      "elapsed_seconds": 36.271,
+      "files": {
+        "config.json": "d4c11e84a59c8af4d88446bba53b718f7aef740daa070ded08fd6a9a3aca4fc6",
+        "model.safetensors": "e5130ca26aa649f69035269bfb00a25afc4704d11ff4385ae368e6eed4ad530a",
+        "special_tokens_map.json": "6f50ab5a5a509a1c309d6171f339b196a900dc9c99ad0408ff23bb615fdae7ad",
+        "tokenizer.json": "c24618a1b3e6a38167beff1c72cffd126c3a66254347304b50547d12c5f25624",
+        "tokenizer_config.json": "70e38394e494931c6f773ba41e19460dd4436526b852207367f04341b4066d3f"
+      },
+      "ids": [
+        "bme-national-opening-scale",
+        "bme-national-opening-rate",
+        "bme-occupational-wage",
+        "bme-hopkins-destinations",
+        "bme-ohio-industry",
+        "bme-placement-selected-response",
+        "bme-placement-full-audit",
+        "bme-offer-eligibility",
+        "bme-offer-binding",
+        "bme-debt-large-gap",
+        "bme-debt-fully-funded",
+        "bme-cash-before-deadline",
+        "bme-cash-after-deadline",
+        "bme-seats-duplicated",
+        "bme-seats-distinct",
+        "bme-neutral-departures",
+        "bme-neutral-units"
+      ],
+      "inputs": {
+        "continuations.jsonl": "f904c7c2dc85f62e84a7ae9701ad0adec021a6568aefbed16bed51beac190720",
+        "evidence.txt": "fbae25da947512fc99c0c12bce71a9e6955bfea8985d770092d3c04bbb774fca"
+      },
+      "max_new_tokens": 160,
+      "mode": "score",
+      "model": "EleutherAI/pythia-410m-deduped",
+      "peak_rss_kib": 2188052,
+      "precision": "float32",
+      "revision": "c66f7467608ffee8fca0d28cf1f46a7574b53cec",
+      "rows": 51,
+      "sampling_seed_per_batch": 29,
+      "setup_seconds": 1.375,
+      "source": {
+        "commit_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "expected_sha": "0a420925df62a001fb52667196ad00f6f94362d9",
+        "tracked_tree_clean": true
+      },
+      "temperature": 0.7,
+      "threads": 4,
+      "top_p": 0.9,
+      "versions": {
+        "torch": "2.4.1+cpu",
+        "transformers": "4.44.2"
+      },
+      "wrapper": "literal"
+    }
+  },
+  "workflow_run": 45456057977
+}
